@@ -1,0 +1,2048 @@
+<Window x:Class="ControleDeContasSteam.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        mc:Ignorable="d"
+        Title="Controle de Contas Steam"
+        Icon="Assets/rexpeita-title-icon.png"
+        Width="1260"
+        Height="700"
+        MinWidth="1060"
+        MinHeight="620"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="#06111D"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        TextOptions.TextHintingMode="Fixed"
+        Loaded="Window_Loaded"
+        StateChanged="Window_StateChanged">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="32"
+                            ResizeBorderThickness="6"
+                            CornerRadius="0"
+                            GlassFrameThickness="0"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Bg" Color="#06111D" />
+        <SolidColorBrush x:Key="Panel" Color="#0C1A28" />
+        <SolidColorBrush x:Key="Panel2" Color="#102232" />
+        <SolidColorBrush x:Key="Hover" Color="#17334A" />
+        <SolidColorBrush x:Key="SelectedNav" Color="#0B2945" />
+        <SolidColorBrush x:Key="Line" Color="#1B3549" />
+        <SolidColorBrush x:Key="Text" Color="#E9F3FF" />
+        <SolidColorBrush x:Key="Muted" Color="#8DA4B5" />
+        <SolidColorBrush x:Key="Blue" Color="#1677D2" />
+        <SolidColorBrush x:Key="Green" Color="#26B96C" />
+        <SolidColorBrush x:Key="Amber" Color="#F2B632" />
+        <SolidColorBrush x:Key="Purple" Color="#7D56E8" />
+        <SolidColorBrush x:Key="Red" Color="#DD5353" />
+        <FontFamily x:Key="AppFont">Segoe UI Variable Text, Segoe UI</FontFamily>
+        <FontFamily x:Key="DisplayFont">Segoe UI Variable Display, Segoe UI</FontFamily>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontWeight" Value="Regular" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        </Style>
+
+        <Style x:Key="LabelText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="{StaticResource Blue}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1C8AF0" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="{StaticResource Panel2}" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{StaticResource Hover}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NavButton" BasedOn="{StaticResource GhostButton}" TargetType="Button">
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="16,0,0,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="{StaticResource Hover}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="9,0" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="#0A1724" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CaretBrush" Value="{StaticResource Text}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="9,0" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="#0A1724" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CaretBrush" Value="{StaticResource Text}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="34" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="#0A1724" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="#0A1724" />
+                        <Setter Property="Foreground" Value="{StaticResource Text}" />
+                        <Setter Property="Padding" Value="10,6" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="ItemRoot"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="#1B3549"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter TargetName="ItemRoot" Property="Background" Value="#102232" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="ItemRoot" Property="Background" Value="#13283A" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="Toggle"
+                                          Focusable="False"
+                                          ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Root"
+                                                Background="#081420"
+                                                BorderBrush="#24394D"
+                                                BorderThickness="1"
+                                                CornerRadius="4">
+                                            <Grid>
+                                                <ContentPresenter Margin="10,0,34,0"
+                                                                  HorizontalAlignment="Left"
+                                                                  VerticalAlignment="Center"
+                                                                  RecognizesAccessKey="True" />
+                                                <TextBlock Text="&#xE70D;"
+                                                           FontFamily="Segoe MDL2 Assets"
+                                                           Foreground="{StaticResource Text}"
+                                                           Opacity="0.86"
+                                                           FontSize="11"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,12,0" />
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Root" Property="BorderBrush" Value="#2B6EA6" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                                <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                                  TextElement.Foreground="{StaticResource Text}" />
+                            </ToggleButton>
+                            <Popup x:Name="PART_Popup"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   PopupAnimation="Fade">
+                                <Border MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        MaxHeight="220"
+                                        Background="#081420"
+                                        BorderBrush="#24394D"
+                                        BorderThickness="1"
+                                        CornerRadius="5">
+                                    <ScrollViewer Margin="0"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalScrollBarVisibility="Hidden"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  CanContentScroll="False"
+                                                  PanningMode="VerticalOnly">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PinBox" TargetType="PasswordBox">
+            <Setter Property="Width" Value="50" />
+            <Setter Property="Height" Value="42" />
+            <Setter Property="MaxLength" Value="1" />
+            <Setter Property="FontSize" Value="21" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="#081725" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="BorderBrush" Value="#1165A5" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#1D91EA" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Panel}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="Padding" Value="14" />
+        </Style>
+
+        <Style x:Key="TitleButton" TargetType="Button">
+            <Setter Property="Width" Value="42" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#14283A" />
+                                <Setter Property="Foreground" Value="{StaticResource Text}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseTitleButton" BasedOn="{StaticResource TitleButton}" TargetType="Button">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D83B3B" />
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="GridIconButton" TargetType="Button">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#D9E6F0" />
+            <Setter Property="BorderBrush" Value="#4A5A68" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#17334A" />
+                                <Setter Property="Foreground" Value="{StaticResource Text}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GridDeleteButton" BasedOn="{StaticResource GridIconButton}" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource Red}" />
+            <Setter Property="BorderBrush" Value="#8D2530" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style x:Key="ModalActionButton" TargetType="Button">
+            <Setter Property="Height" Value="38" />
+            <Setter Property="MinWidth" Value="108" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Background" Value="{StaticResource Blue}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="{StaticResource Blue}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1C8AF0" />
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#1C8AF0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModalCancelButton" TargetType="Button">
+            <Setter Property="Height" Value="38" />
+            <Setter Property="MinWidth" Value="108" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="BorderBrush" Value="#4A5A68" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#14283A" />
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#6D8799" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ConfirmDeleteButton" TargetType="Button">
+            <Setter Property="Height" Value="38" />
+            <Setter Property="MinWidth" Value="108" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Background" Value="#8D2530" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#A7333F" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#B83B49" />
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#D44A5A" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TableHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="31" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Background" Value="#0E1F2E" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="BorderBrush" Value="#142A3D" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="TableCell" TargetType="DataGridCell">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="BorderBrush" Value="#142A3D" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#10283B" />
+                    <Setter Property="Foreground" Value="{StaticResource Text}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TableRow" TargetType="DataGridRow">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Background" Value="#0B1926" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#102437" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#10283B" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TableNameText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style>
+
+        <Style x:Key="TableCenterText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="DropCheckBox" TargetType="CheckBox">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="Box"
+                                Width="13"
+                                Height="13"
+                                Background="Transparent"
+                                BorderBrush="#3A5264"
+                                BorderThickness="1"
+                                CornerRadius="2">
+                            <TextBlock x:Name="Mark"
+                                       Text="&#xE73E;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="8"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Visibility="Collapsed" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="{StaticResource Green}" />
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Green}" />
+                                <Setter TargetName="Mark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#6D8799" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource Bg}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#081724" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+            <Grid MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="9,0,0,0">
+                    <Image Source="Assets/rexpeita-title-icon.png"
+                           Width="24"
+                           Height="24"
+                           Stretch="Uniform"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Margin="0,0,8,0"
+                           VerticalAlignment="Center" />
+                    <TextBlock Text="Controle de Contas Steam"
+                               Foreground="{StaticResource Text}"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Content="&#xE921;" Style="{StaticResource TitleButton}" Click="MinimizeButton_Click" />
+                    <Button x:Name="MaximizeRestoreButton" Content="&#xE922;" Style="{StaticResource TitleButton}" Click="MaximizeRestoreButton_Click" />
+                    <Button Content="&#xE8BB;" Style="{StaticResource CloseTitleButton}" Click="CloseButton_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid x:Name="LoginView" Grid.Row="1">
+            <Grid.Background>
+                <RadialGradientBrush Center="0.5,0.34" GradientOrigin="0.5,0.34" RadiusX="0.75" RadiusY="0.75">
+                    <GradientStop Color="#0D2B42" Offset="0" />
+                    <GradientStop Color="#06111D" Offset="0.72" />
+                    <GradientStop Color="#050C15" Offset="1" />
+                </RadialGradientBrush>
+            </Grid.Background>
+
+            <Border Width="376"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="#0B1826"
+                    BorderBrush="#1D3548"
+                    BorderThickness="1"
+                    CornerRadius="7"
+                    Padding="22"
+                    Margin="0,0,0,18">
+                <StackPanel>
+                    <Image Source="Assets/rexpeita-avatar.png"
+                           Width="146"
+                           Height="120"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,6" />
+                    <TextBlock Text="Controle de Contas Steam" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,4" />
+                    <TextBlock Text="Acesse suas contas protegidas com PIN" Foreground="{StaticResource Text}" Opacity="0.86" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,18" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
+                        <PasswordBox x:Name="PinBox1" Style="{StaticResource PinBox}" Margin="0,0,12,0" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
+                        <PasswordBox x:Name="PinBox2" Style="{StaticResource PinBox}" Margin="0,0,12,0" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
+                        <PasswordBox x:Name="PinBox3" Style="{StaticResource PinBox}" Margin="0,0,12,0" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
+                        <PasswordBox x:Name="PinBox4" Style="{StaticResource PinBox}" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
+                    </StackPanel>
+                    <TextBlock x:Name="PinErrorText" Foreground="{StaticResource Red}" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,10" />
+                    <Button Height="36" Click="EnterButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
+                            <TextBlock Text="Entrar" />
+                        </StackPanel>
+                    </Button>
+                    <Button Height="34" Style="{StaticResource GhostButton}" Margin="0,10,0,0" Click="ShowPinHelpButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" Foreground="{StaticResource Text}" />
+                            <TextBlock Text="Alterar PIN" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <Border Height="38"
+                    Background="#081724"
+                    BorderBrush="{StaticResource Line}"
+                    BorderThickness="0,1,0,0"
+                    VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="&#xE83D;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="13" Margin="0,0,8,0" />
+                    <TextBlock x:Name="LoginFooterText" Text="Sistema protegido - ultima atualizacao: hoje" Foreground="{StaticResource Muted}" FontSize="12" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="AppView" Grid.Row="1" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="238" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#06111D" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.Background>
+                        <RadialGradientBrush Center="0.50,0.13" GradientOrigin="0.50,0.13" RadiusX="0.78" RadiusY="0.48">
+                            <GradientStop Color="#0D2B42" Offset="0" />
+                            <GradientStop Color="#06111D" Offset="0.72" />
+                            <GradientStop Color="#050C15" Offset="1" />
+                        </RadialGradientBrush>
+                    </Grid.Background>
+
+                    <StackPanel Margin="24,24,16,0">
+                        <Image Source="Assets/rexpeita-avatar.png"
+                               Width="108"
+                               Height="108"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,8,22" />
+                        <Button x:Name="NavAccountsButton" Tag="accounts" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
+                            <Grid Width="190">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="34" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="25" Height="25" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Rectangle.OpacityMask>
+                                        <ImageBrush ImageSource="Assets/icon-steam.png" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                                <TextBlock Grid.Column="1" Text="Contas Steam" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                        <Button x:Name="NavDropsButton" Tag="drops" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
+                            <Grid Width="190">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="34" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="24" Height="24" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Rectangle.OpacityMask>
+                                        <ImageBrush ImageSource="Assets/icon-gift.png" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                                <TextBlock Grid.Column="1" Text="Drops" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                        <Button x:Name="NavRankingButton" Tag="new-account" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
+                            <Grid Width="190">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="34" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="25" Height="25" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Rectangle.OpacityMask>
+                                        <ImageBrush ImageSource="Assets/icon-user.png" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                                <TextBlock Grid.Column="1" Text="Nova Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                        <Button x:Name="NavReportsButton" Tag="drops-by-account" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
+                            <Grid Width="190">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="34" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Width="24" Height="24" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Rectangle.OpacityMask>
+                                        <ImageBrush ImageSource="Assets/icon-profit.png" Stretch="Uniform" />
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                                <TextBlock Grid.Column="1" Text="Profit por Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                        <Button x:Name="NavSettingsButton" Tag="settings" Style="{StaticResource NavButton}" Click="NavButton_Click">
+                            <Grid Width="190">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="34" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="22" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="Configurações" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom" Margin="24,0,16,24">
+                        <Border Height="1" Background="{StaticResource Line}" Margin="0,0,0,15" />
+                        <StackPanel Orientation="Horizontal" Margin="8,0,0,8">
+                            <TextBlock Text="&#xE83D;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Green}" FontSize="16" Width="26" />
+                            <TextBlock Text="Sistema protegido" Foreground="{StaticResource Muted}" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Text="v1.0.0" Foreground="#647889" FontSize="12" Margin="40,0,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" Margin="24,20,24,18">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock x:Name="SectionTitleText" Text="Contas Steam" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="38" FontWeight="SemiBold" />
+                        <TextBlock x:Name="SectionSubtitleText" Text="Vis&#x00E3;o geral das contas cadastradas." Foreground="{StaticResource Muted}" FontSize="15" Margin="0,-1,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="Collapsed">
+                        <Button Click="OpenAddAccountButton_Click" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
+                                <TextBlock Text="Adicionar Conta" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource GhostButton}" Click="RefreshButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
+                                <TextBlock Text="Atualizar" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,14">
+                    <Border Style="{StaticResource Card}" Height="108" Padding="16" Margin="0,0,14,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="62" Height="62" Background="Transparent" BorderBrush="#0098A9" BorderThickness="1" CornerRadius="31" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE716;" FontFamily="Segoe MDL2 Assets" Foreground="#00A7B8" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Total de contas" Foreground="{StaticResource Muted}" FontSize="15" />
+                                <TextBlock x:Name="TotalAccountsText" Text="0" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Height="108" Padding="16" Margin="0,0,14,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="62" Height="62" Background="Transparent" BorderBrush="#7E2AB9" BorderThickness="1" CornerRadius="31" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Maior vit&#x00F3;ria" Foreground="{StaticResource Muted}" FontSize="15" />
+                                <TextBlock x:Name="BestVictoryText" Text="0" Foreground="{StaticResource Purple}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Height="108" Padding="16" Margin="0,0,14,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="62" Height="62" Background="Transparent" BorderBrush="#8D2530" BorderThickness="1" CornerRadius="31" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE83D;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Red}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Contas banidas" Foreground="{StaticResource Muted}" FontSize="15" />
+                                <TextBlock x:Name="BannedAccountsText" Text="0" Foreground="{StaticResource Red}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource Card}" Height="108" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="62" Height="62" Background="Transparent" BorderBrush="#7E2AB9" BorderThickness="1" CornerRadius="31" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="&#xE735;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Maior rank" Foreground="{StaticResource Muted}" FontSize="15" />
+                                <TextBlock x:Name="BestRankText" Text="Sem Premier" Foreground="{StaticResource Purple}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </UniformGrid>
+
+                <Grid x:Name="ListPanel" Grid.Row="2">
+                    <Border Style="{StaticResource Card}" Padding="0" Visibility="Collapsed">
+                        <DataGrid x:Name="AccountsGrid"
+                                  ItemsSource="{Binding Accounts}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="False"
+                                  HeadersVisibility="Column"
+                                  RowHeaderWidth="0"
+                                  RowHeight="36"
+                                  ColumnHeaderHeight="31"
+                                  GridLinesVisibility="None"
+                                  Background="#0B1926"
+                                  Foreground="{StaticResource Text}"
+                                  BorderThickness="0"
+                                  RowBackground="#0B1926"
+                                  AlternatingRowBackground="#0B1926"
+                                  SelectionMode="Single"
+                                  ColumnHeaderStyle="{StaticResource TableHeader}"
+                                  CellStyle="{StaticResource TableCell}"
+                                  RowStyle="{StaticResource TableRow}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nome" Binding="{Binding Name}" Width="*" IsReadOnly="True" ElementStyle="{StaticResource TableNameText}" />
+                                <DataGridTemplateColumn Header="Ações" Width="88">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" Margin="0,0,6,0" />
+                                                <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Vitória" Binding="{Binding Victories}" Width="82" IsReadOnly="True" ElementStyle="{StaticResource TableCenterText}" />
+                                <DataGridTextColumn Header="Ban" Binding="{Binding Ban}" Width="74" IsReadOnly="True" ElementStyle="{StaticResource TableCenterText}" />
+                                <DataGridTemplateColumn Header="Rank CS2" Width="122">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding RankBrush}" CornerRadius="5" Height="22" Padding="10,0" HorizontalAlignment="Center" MinWidth="88" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="NoPremierIcon"
+                                                               Text="⊘"
+                                                               Foreground="{StaticResource Red}"
+                                                               FontSize="11"
+                                                               FontWeight="SemiBold"
+                                                               Margin="0,0,4,0"
+                                                               Visibility="Collapsed" />
+                                                    <TextBlock Text="{Binding RankDisplayText}" Foreground="White" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Border>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsUnrankedPremier}" Value="True">
+                                                    <Setter TargetName="NoPremierIcon" Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Drop" Width="76">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding DropActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DropCheckBox}" Click="DropCheckBox_Click" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="" Width="88">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" Margin="0,0,6,0" />
+                                                <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                    <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Panel.ZIndex="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="58" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="240" />
+                                        <ColumnDefinition Width="84" />
+                                        <ColumnDefinition Width="84" />
+                                        <ColumnDefinition Width="96" />
+                                        <ColumnDefinition Width="112" />
+                                        <ColumnDefinition Width="176" />
+                                        <ColumnDefinition Width="92" />
+                                        <ColumnDefinition Width="92" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Conta" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="Ações" Foreground="#DCEBFA" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="Vitória" Foreground="#DCEBFA" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="3" Text="Ban" Foreground="#DCEBFA" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="4" Text="Rank CS2" Foreground="#DCEBFA" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="5" Text="Drop" Foreground="#DCEBFA" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <Border Grid.ColumnSpan="9" Background="{StaticResource Panel}" Panel.ZIndex="5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="240" />
+                                                <ColumnDefinition Width="84" />
+                                                <ColumnDefinition Width="84" />
+                                                <ColumnDefinition Width="96" />
+                                                <ColumnDefinition Width="112" />
+                                                <ColumnDefinition Width="176" />
+                                                <ColumnDefinition Width="92" />
+                                                <ColumnDefinition Width="92" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Conta" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="Senha" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Text="Link" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="3" Text="Vit&#x00F3;rias" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Text="Ban" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="5" Text="Rank Premier" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="6" Text="Editar" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="7" Text="Excluir" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <ScrollViewer Grid.Row="1"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          CanContentScroll="False"
+                                          PanningMode="VerticalOnly">
+                                <ItemsControl ItemsSource="{Binding Accounts}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Height="56" BorderBrush="#13283A" BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="240" />
+                                                        <ColumnDefinition Width="84" />
+                                                        <ColumnDefinition Width="84" />
+                                                        <ColumnDefinition Width="96" />
+                                                        <ColumnDefinition Width="112" />
+                                                        <ColumnDefinition Width="176" />
+                                                        <ColumnDefinition Width="92" />
+                                                        <ColumnDefinition Width="92" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="{Binding Name}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" Margin="0,0,6,0" />
+                                                        <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" />
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Victories}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="3" Text="{Binding Ban}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <Border Grid.Column="4" Background="{Binding RankBrush}" CornerRadius="5" Height="22" Padding="10,0" HorizontalAlignment="Center" MinWidth="88" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <TextBlock x:Name="NoPremierIcon" Text="&#x2298;" Foreground="{StaticResource Red}" FontSize="11" FontWeight="SemiBold" Margin="0,0,4,0" Visibility="Collapsed" />
+                                                            <TextBlock Text="{Binding RankDisplayText}" Foreground="White" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <CheckBox Grid.Column="5" IsChecked="{Binding DropActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DropCheckBox}" Click="DropCheckBox_Click" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <StackPanel Grid.Column="6" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" Margin="0,0,6,0" />
+                                                        <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" />
+                                                    </StackPanel>
+                                                    <Grid Grid.ColumnSpan="9" Background="{StaticResource Panel}" Panel.ZIndex="5">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="240" />
+                                                            <ColumnDefinition Width="84" />
+                                                            <ColumnDefinition Width="84" />
+                                                            <ColumnDefinition Width="96" />
+                                                            <ColumnDefinition Width="112" />
+                                                            <ColumnDefinition Width="176" />
+                                                            <ColumnDefinition Width="92" />
+                                                            <ColumnDefinition Width="92" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,0,8,0">
+                                                            <Border Width="36" Height="36" Background="#0D3557" CornerRadius="18" Margin="0,0,14,0">
+                                                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#57A7DE" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </Border>
+                                                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                        </StackPanel>
+                                                        <Button Grid.Column="1" Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Button Grid.Column="2" Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding Victories}" Foreground="White" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Border Grid.Column="4" Background="{Binding BanBackgroundBrush}" BorderBrush="{Binding BanBorderBrush}" BorderThickness="1" CornerRadius="5" Height="36" Padding="14,0" HorizontalAlignment="Center" MinWidth="78" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding BanDisplayText}" Foreground="{Binding BanForegroundBrush}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Border>
+                                                        <Border Grid.Column="5" Background="{Binding RankChipBackgroundBrush}" BorderBrush="{Binding RankBorderBrush}" BorderThickness="1" CornerRadius="5" Height="36" Padding="12,0" HorizontalAlignment="Center" MinWidth="142" VerticalAlignment="Center">
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <TextBlock x:Name="RankBadgeDesignerIcon" Text="&#xE735;" FontFamily="Segoe MDL2 Assets" Foreground="{Binding RankTextBrush}" FontSize="17" Margin="0,0,8,0" />
+                                                                <TextBlock x:Name="NoPremierDesignerIcon" Text="&#x2298;" Foreground="{StaticResource Red}" FontSize="13" FontWeight="SemiBold" Margin="0,0,6,0" Visibility="Collapsed" />
+                                                                <TextBlock Text="{Binding RankDisplayText}" Foreground="{Binding RankTextBrush}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                        <Button Grid.Column="6" Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Button Grid.Column="7" Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsUnrankedPremier}" Value="True">
+                                                    <Setter TargetName="NoPremierIcon" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="NoPremierDesignerIcon" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="RankBadgeDesignerIcon" Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid x:Name="ReportsPanel" Grid.Row="2" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource Card}" Margin="0,0,10,0" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Resumo de contas" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock x:Name="ReportTotalText" Margin="0,0,0,8" />
+                            <TextBlock x:Name="ReportDropsText" Margin="0,0,0,8" />
+                            <TextBlock x:Name="ReportWinsText" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Margin="10,0,0,0" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Arquivo local" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock Text="Os dados ficam salvos neste computador." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,8" />
+                            <TextBlock x:Name="DataFileText" FontSize="12" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid x:Name="SettingsPanel" Grid.Row="2" Visibility="Collapsed">
+                    <Border Style="{StaticResource Card}" Width="520" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="Alterar PIN de acesso" FontSize="17" FontWeight="SemiBold" />
+                            <TextBlock Text="Use 4 digitos para manter suas contas protegidas." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
+                            <TextBlock Text="PIN atual" Style="{StaticResource LabelText}" />
+                            <PasswordBox x:Name="CurrentPinBox" MaxLength="4" Margin="0,5,0,12" />
+                            <TextBlock Text="Novo PIN" Style="{StaticResource LabelText}" />
+                            <PasswordBox x:Name="NewPinBox" MaxLength="4" Margin="0,5,0,12" />
+                            <TextBlock Text="Confirmar novo PIN" Style="{StaticResource LabelText}" />
+                            <PasswordBox x:Name="ConfirmPinBox" MaxLength="4" Margin="0,5,0,12" />
+                            <TextBlock x:Name="SettingsMessageText" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,12" />
+                            <Button Content="Salvar novo PIN" Width="128" HorizontalAlignment="Left" Click="ChangePinButton_Click" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="3" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="TableFooterText" Text="0 contas | 0 drops faltando" Foreground="{StaticResource Muted}" FontSize="12" />
+                    <TextBlock x:Name="BanUpdateFooterText" Grid.Column="1" Text="Bans atualizados hoje" Foreground="{StaticResource Muted}" FontSize="12" Margin="18,0,0,0" />
+                    <TextBlock x:Name="StatusText" Grid.Column="2" Text="Pronto" Foreground="{StaticResource Muted}" FontSize="12" />
+                </Grid>
+
+                <Grid x:Name="DropsPanel" Grid.Row="0" Grid.RowSpan="4" Background="{StaticResource Bg}" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Margin="10,0,0,18">
+                        <TextBlock Text="Drops pendentes" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
+                        <TextBlock Text="Veja rapidamente quais contas ainda precisam de drop." Foreground="{StaticResource Muted}" FontSize="15" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,18">
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="22" Margin="0,0,14,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="66" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="50" Height="50" Background="#3B2C0F" CornerRadius="25" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Amber}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Contas pendentes" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsPendingPageText" Text="0" Foreground="{StaticResource Amber}" FontSize="24" FontWeight="SemiBold" Margin="0,3,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="22" Margin="0,0,14,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="66" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="50" Height="50" Background="#123322" CornerRadius="25" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Green}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Contas com drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsActivePageText" Text="0" Foreground="{StaticResource Green}" FontSize="24" FontWeight="SemiBold" Margin="0,3,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="22">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="66" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="50" Height="50" Background="#2D1B50" CornerRadius="25" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Próximo reset" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsNextResetPageText" Text="Terça-feira, 23h" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Grid.Row="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="52" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="54" />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+                                <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="250" />
+                                    <ColumnDefinition Width="210" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Conta" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="28,0,0,0" />
+                                <TextBlock Grid.Column="1" Text="Status" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="Ação" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <ScrollViewer Grid.Row="1"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          CanContentScroll="False"
+                                          PanningMode="VerticalOnly">
+                                <ItemsControl ItemsSource="{Binding PendingDropAccounts}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Height="56" BorderBrush="#13283A" BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="250" />
+                                                    <ColumnDefinition Width="210" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Orientation="Horizontal" Margin="28,0,0,0" VerticalAlignment="Center">
+                                                    <Border Width="28" Height="28" Background="#102C4A" CornerRadius="14" Margin="0,0,16,0">
+                                                        <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#8DBBE9" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Name}" Foreground="White" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <Border Grid.Column="1" Width="148" Height="30" BorderBrush="#8D6C10" BorderThickness="1" Background="#332B10" CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Amber}" FontSize="15" Margin="0,0,8,0" />
+                                                        <TextBlock Text="Drop pendente" Foreground="{StaticResource Amber}" FontSize="14" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <Button Grid.Column="2" Tag="{Binding}" Width="134" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Blue}" Click="MarkDropButton_Click">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,9,0" />
+                                                        <TextBlock Text="Marcar drop" />
+                                                    </StackPanel>
+                                                </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                            <Border Grid.Row="2" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="28,0,0,0">
+                                    <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="18" Margin="0,0,12,0" />
+                                    <TextBlock x:Name="DropsFooterText" Text="0 contas sem drop" Foreground="{StaticResource Muted}" FontSize="15" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,8,0,0">
+                        <TextBlock x:Name="DropsBanUpdateFooterText"
+                                   Text="Bans atualizados hoje"
+                                   Foreground="{StaticResource Muted}"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,18,0" />
+                        <Button x:Name="UndoDropButton"
+                                Style="{StaticResource GhostButton}"
+                                Height="28"
+                                Padding="10,0"
+                                Margin="0,0,12,0"
+                                Visibility="Collapsed"
+                                Click="UndoLastDropButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE7A7;" FontFamily="Segoe MDL2 Assets" Margin="0,0,7,0" />
+                                <TextBlock Text="Desfazer" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock x:Name="DropsStatusText"
+                                   Text="Pronto"
+                                   Foreground="{StaticResource Muted}"
+                                   FontSize="12"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="DropsByAccountPanel" Grid.Row="0" Grid.RowSpan="4" Background="{StaticResource Bg}" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Margin="4,0,0,10">
+                        <TextBlock Text="Profit por Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
+                        <TextBlock Text="Gerencie o profit dos drops adicionados para cada conta." Foreground="{StaticResource Text}" Opacity="0.76" FontSize="13" Margin="0,1,0,0" />
+                    </StackPanel>
+
+                    <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,10">
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="12" Margin="0,0,10,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="46" Height="46" BorderBrush="#00A7B8" BorderThickness="1" CornerRadius="23" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE7BF;" FontFamily="Segoe MDL2 Assets" Foreground="#00A7B8" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Total de drops" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="DropStatsTotalText" Text="0" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="12" Margin="0,0,10,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="46" Height="46" BorderBrush="{StaticResource Purple}" BorderThickness="1" CornerRadius="23" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xEAFD;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Valor total" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="DropStatsValueText" Text="R$ 0,00" Foreground="#B06AFF" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="56" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="46" Height="46" BorderBrush="{StaticResource Blue}" BorderThickness="1" CornerRadius="23" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Blue}" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Media por drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="DropStatsAverageText" Text="R$ 0,00" Foreground="#58A6FF" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </UniformGrid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="260" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="34" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Contas cadastradas" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                <Border Grid.Row="1" Background="#081420" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="5" Margin="0,0,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="36" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="DropAccountSearchBox"
+                                                 Grid.Column="1"
+                                                 BorderThickness="0"
+                                                 Background="Transparent"
+                                                 Height="34"
+                                                 FontSize="13"
+                                                 TextChanged="DropAccountSearchBox_TextChanged" />
+                                    </Grid>
+                                </Border>
+                                <ScrollViewer Grid.Row="2"
+                                              VerticalScrollBarVisibility="Hidden"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              CanContentScroll="False"
+                                              PanningMode="VerticalOnly">
+                                    <ItemsControl ItemsSource="{Binding DropAccountSummaries}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Tag="{Binding}"
+                                                        Style="{StaticResource GhostButton}"
+                                                        Height="52"
+                                                        Padding="0"
+                                                        Background="{Binding CardBackgroundBrush}"
+                                                        BorderBrush="{Binding CardBorderBrush}"
+                                                        BorderThickness="1"
+                                                        Margin="0,0,0,8"
+                                                        Click="SelectDropAccountButton_Click">
+                                                    <Grid Margin="10,0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="38" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Border Width="30" Height="30" Background="#0D3557" CornerRadius="15" VerticalAlignment="Center">
+                                                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#57A7DE" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Text="{Binding DropCountText}" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,3,0,0" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="60" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="38" />
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border Width="32" Height="32" Background="#0D3557" CornerRadius="16" Margin="0,0,10,0">
+                                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#57A7DE" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel>
+                                                <TextBlock Text="Conta selecionada" Foreground="{StaticResource Muted}" FontSize="12" />
+                                                <TextBlock x:Name="SelectedDropAccountNameText" Text="Nenhuma conta selecionada" FontSize="15" FontWeight="SemiBold" Margin="0,2,0,0" />
+                                                <TextBlock x:Name="SelectedDropAccountCountText" Text="0 drops adicionados" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,1,0,0" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Button x:Name="AddDropButton" Grid.Column="1" Width="140" Height="32" Background="{StaticResource Blue}" Click="OpenAddDropButton_Click" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
+                                                <TextBlock Text="Adicionar Drop" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="1" Text="Drops adicionados" FontSize="16" FontWeight="SemiBold" Margin="4,10,0,8" />
+
+                                <Border Grid.Row="2" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="6">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="34" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Border Grid.Row="0" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Background="#0E1F2E">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="92" />
+                                                    <ColumnDefinition Width="1.7*" />
+                                                    <ColumnDefinition Width="142" />
+                                                    <ColumnDefinition Width="104" />
+                                                    <ColumnDefinition Width="132" />
+                                                    <ColumnDefinition Width="88" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Itens" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Text="Nome" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0" />
+                                                <TextBlock Grid.Column="2" Text="Condicao" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="3" Text="Valor (R$)" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="4" Text="Adicionado em" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="5" Text="Acoes" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <ScrollViewer Grid.Row="1"
+                                                      VerticalScrollBarVisibility="Hidden"
+                                                      HorizontalScrollBarVisibility="Disabled"
+                                                      CanContentScroll="False"
+                                                      PanningMode="VerticalOnly">
+                                            <ItemsControl ItemsSource="{Binding SelectedAccountDrops}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Height="46" BorderBrush="#13283A" BorderThickness="0,0,0,1">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="92" />
+                                                                    <ColumnDefinition Width="1.7*" />
+                                                                    <ColumnDefinition Width="142" />
+                                                                    <ColumnDefinition Width="104" />
+                                                                    <ColumnDefinition Width="132" />
+                                                                    <ColumnDefinition Width="88" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Border Width="68" Height="30" Background="#0A1724" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding Weapon}" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                </Border>
+                                                                <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="White" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding Condition}" Foreground="{Binding ConditionBrush}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="3" Text="{Binding ValueText}" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <TextBlock Grid.Column="4" Text="{Binding AddedAtText}" Foreground="{StaticResource Text}" Opacity="0.86" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                    <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Width="34" Height="32" Click="EditDropButton_Click" ToolTip="Editar drop" Margin="0,0,6,0" />
+                                                                    <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Width="34" Height="32" Click="DeleteDropButton_Click" ToolTip="Excluir drop" />
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="3" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0">
+                                    <Grid>
+                                        <TextBlock x:Name="ShowingDropCountText" Text="Mostrando 0 drops" Foreground="{StaticResource Muted}" FontSize="13" VerticalAlignment="Center" Margin="4,0,0,0" />
+                                        <TextBlock x:Name="SelectedAccountTotalText" Text="Total da conta: R$ 0,00" Foreground="{StaticResource Green}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <TextBlock x:Name="DropByAccountStatusText"
+                               Grid.Row="3"
+                               Text="Pronto"
+                               Foreground="{StaticResource Muted}"
+                               FontSize="12"
+                               HorizontalAlignment="Right"
+                               Margin="0,8,0,0" />
+                </Grid>
+
+                <Grid x:Name="NewAccountPanel" Grid.Row="0" Grid.RowSpan="4" Visibility="Collapsed" ClipToBounds="True" Background="{StaticResource Bg}">
+                    <Grid Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="700" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Margin="4,0,0,26">
+                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#56A8E8" FontSize="38" VerticalAlignment="Top" Margin="0,2,22,0" />
+                            <StackPanel>
+                                <TextBlock Text="Nova Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="38" FontWeight="SemiBold" />
+                                <TextBlock Text="Cadastre uma nova conta Steam de forma r&#x00E1;pida e organizada." Foreground="{StaticResource Muted}" FontSize="16" Margin="0,3,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border Grid.Row="1"
+                                Background="#B20C1A28"
+                                BorderBrush="{StaticResource Line}"
+                                BorderThickness="1"
+                                CornerRadius="7"
+                                Padding="28"
+                                VerticalAlignment="Top">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="112" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="44" />
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Nome" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="NewAccountNameBox" Grid.Column="1" BorderThickness="0" Background="Transparent" Height="42" FontSize="14" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="2" Text="Senha" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Row="2" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="42" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <PasswordBox x:Name="NewAccountPasswordBox" Grid.Column="1" BorderThickness="0" Background="Transparent" Height="42" PasswordChanged="NewAccountPasswordBox_PasswordChanged" />
+                                        <TextBox x:Name="NewAccountPasswordVisibleBox" Grid.Column="1" Visibility="Collapsed" BorderThickness="0" Background="Transparent" Height="42" TextChanged="NewAccountPasswordVisibleBox_TextChanged" />
+                                        <Button x:Name="NewAccountPasswordVisibilityButton" Grid.Column="2" Content="&#xE890;" FontFamily="Segoe MDL2 Assets" Style="{StaticResource GridIconButton}" Width="34" Height="30" BorderBrush="Transparent" Click="ToggleNewAccountPasswordVisibility_Click" ToolTip="Mostrar senha" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="4" Text="URL" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Row="4" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE71B;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="NewAccountUrlBox" Grid.Column="1" BorderThickness="0" Background="Transparent" Height="42" FontSize="14" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="6" Text="Vit&#x00F3;rias" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Row="6" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE7C1;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="NewAccountVictoriesBox" Grid.Column="1" Text="0" BorderThickness="0" Background="Transparent" Height="42" FontSize="14" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="8" Text="Ban (dias)" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Row="8" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE90F;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="NewAccountBanBox" Grid.Column="1" Text="0" BorderThickness="0" Background="Transparent" Height="42" FontSize="14" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Grid.Row="10" Text="Rank Premier" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <Border Grid.Row="10" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="42" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="&#xE735;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Muted}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <TextBox x:Name="NewAccountRankBox" Grid.Column="1" Text="0" BorderThickness="0" Background="Transparent" Height="42" FontSize="14" PreviewTextInput="NumericTextBox_PreviewTextInput" DataObject.Pasting="NumericTextBox_Pasting" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock x:Name="NewAccountErrorText" Grid.Row="12" Grid.ColumnSpan="2" Foreground="{StaticResource Red}" FontSize="13" />
+                                <StackPanel Grid.Row="12" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                                    <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,12,0" Click="CancelNewAccountPageButton_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                            <TextBlock Text="Cancelar" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource ModalActionButton}" MinWidth="170" Click="SaveNewAccountPageButton_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="15" Margin="0,0,9,0" />
+                                            <TextBlock Text="Salvar conta" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="1" Width="300" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#B20C1A28" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="22">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="50" Height="50" BorderBrush="{StaticResource Blue}" BorderThickness="2" CornerRadius="25" Margin="0,0,18,0">
+                                    <TextBlock Text="i" Foreground="{StaticResource Blue}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock TextWrapping="Wrap" FontSize="15" LineHeight="24">
+                                    <Run Text="Drops s&#x00E3;o gerenciados" />
+                                    <LineBreak />
+                                    <Run Text="na aba " />
+                                    <Run Text="Drops." Foreground="{StaticResource Blue}" FontWeight="SemiBold" />
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="ModalOverlay" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#AA030A12">
+                <Border Background="{StaticResource Panel}"
+                        BorderBrush="{StaticResource Line}"
+                        BorderThickness="1"
+                        CornerRadius="7"
+                        Width="500"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="30"
+                        Padding="22">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="ModalTitleText" Text="Editar Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="23" FontWeight="SemiBold" />
+                                <TextBlock Text="Atualize os dados da conta Steam." Foreground="{StaticResource Muted}" FontSize="13" Margin="0,4,0,0" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="&#xE8BB;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Style="{StaticResource GridIconButton}"
+                                    Width="36"
+                                    Height="34"
+                                    BorderBrush="Transparent"
+                                    Click="CloseModalButton_Click"
+                                    ToolTip="Fechar" />
+                        </Grid>
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="AccountNameBox" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Senha" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <Grid>
+                                    <PasswordBox x:Name="AccountPasswordBox"
+                                                 Padding="9,0,42,0"
+                                                 PasswordChanged="AccountPasswordBox_PasswordChanged" />
+                                    <TextBox x:Name="AccountPasswordVisibleBox"
+                                             Visibility="Collapsed"
+                                             Padding="9,0,42,0"
+                                             TextChanged="AccountPasswordVisibleBox_TextChanged" />
+                                    <Button x:Name="AccountPasswordVisibilityButton"
+                                            Content="&#xE890;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Style="{StaticResource GridIconButton}"
+                                            Width="34"
+                                            Height="30"
+                                            BorderBrush="Transparent"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,2,0"
+                                            Click="ToggleAccountPasswordVisibility_Click"
+                                            ToolTip="Mostrar senha" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="URL" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                        <TextBox x:Name="AccountUrlBox" Margin="0,0,0,12" />
+
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Vit&#x00F3;rias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="AccountVictoriesBox"
+                                         Text="0"
+                                         PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                         DataObject.Pasting="NumericTextBox_Pasting" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Ban em dias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="AccountBanBox"
+                                         Text="0"
+                                         PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                         DataObject.Pasting="NumericTextBox_Pasting" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Rank CS2" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                        <TextBox x:Name="AccountRankBox"
+                                 Text="0"
+                                 Margin="0,0,0,12"
+                                 PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                 DataObject.Pasting="NumericTextBox_Pasting" />
+
+                        <TextBlock x:Name="ModalErrorText" Foreground="{StaticResource Red}" FontSize="12" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+                            <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,10,0" Click="CloseModalButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock Text="Cancelar" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="SaveAccountButton" Style="{StaticResource ModalActionButton}" Click="SaveAccountButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock Text="Salvar" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="DropModalOverlay" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#B4030A12">
+                <Border Background="{StaticResource Panel}"
+                        BorderBrush="#1B5B92"
+                        BorderThickness="1"
+                        CornerRadius="7"
+                        Width="490"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Padding="16">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock x:Name="DropModalTitleText" Text="Adicionar Drop" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="21" FontWeight="SemiBold" />
+                                <TextBlock x:Name="DropModalSubtitleText" Text="Cadastre um novo drop para a conta selecionada." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,3,0,0" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="&#xE8BB;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Style="{StaticResource GridIconButton}"
+                                    Width="34"
+                                    Height="32"
+                                    BorderBrush="Transparent"
+                                    Click="CloseDropModalButton_Click"
+                                    ToolTip="Fechar" />
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Conta" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="DropAccountBox" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Tipo" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <ComboBox x:Name="DropCategoryBox">
+                                    <ComboBoxItem Content="Pistol" />
+                                    <ComboBoxItem Content="Rifle" IsSelected="True" />
+                                    <ComboBoxItem Content="Submetralhadoras" />
+                                    <ComboBoxItem Content="Pesadas" />
+                                    <ComboBoxItem Content="Outro" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="DropNameBox" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Itens" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <ComboBox x:Name="DropWeaponBox" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Condicao" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <ComboBox x:Name="DropConditionBox">
+                                    <ComboBoxItem Content="None" Foreground="#8DA4B5" />
+                                    <ComboBoxItem Content="Nova de F&#x00E1;brica" Foreground="#39C970" IsSelected="True" />
+                                    <ComboBoxItem Content="Pouco Desgastada" Foreground="#58A6FF" />
+                                    <ComboBoxItem Content="Testada em Campo" Foreground="#E4C25A" />
+                                    <ComboBoxItem Content="Bem Desgastada" Foreground="#F39A32" />
+                                    <ComboBoxItem Content="Veterana de Guerra" Foreground="#C981FF" />
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Valor (R$)" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBox x:Name="DropValueBox"
+                                         Text="0,00"
+                                         PreviewTextInput="MoneyTextBox_PreviewTextInput"
+                                         DataObject.Pasting="MoneyTextBox_Pasting" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="DropModalErrorText" Foreground="{StaticResource Red}" FontSize="12" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                            <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,10,0" Click="CloseDropModalButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock Text="Cancelar" />
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="SaveDropButton" Style="{StaticResource ModalActionButton}" MinWidth="160" Click="SaveDropButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock x:Name="SaveDropButtonText" Text="Adicionar Drop" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="ConfirmOverlay" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#B4030A12">
+                <Border Background="{StaticResource Panel}"
+                        BorderBrush="#8D2530"
+                        BorderThickness="1"
+                        CornerRadius="7"
+                        Width="430"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Padding="20">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="42"
+                                        Height="42"
+                                        Background="#32151C"
+                                        BorderBrush="#8D2530"
+                                        BorderThickness="1"
+                                        CornerRadius="21"
+                                        Margin="0,0,14,0">
+                                    <TextBlock Text="&#xE74D;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               Foreground="{StaticResource Red}"
+                                               FontSize="20"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="ConfirmTitleText"
+                                               Text="Confirmar exclusao"
+                                               FontFamily="{StaticResource DisplayFont}"
+                                               Foreground="#F7FBFF"
+                                               FontSize="22"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="Essa acao nao pode ser desfeita."
+                                               Foreground="{StaticResource Muted}"
+                                               FontSize="12"
+                                               Margin="0,3,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="&#xE8BB;"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Style="{StaticResource GridIconButton}"
+                                    Width="34"
+                                    Height="32"
+                                    BorderBrush="Transparent"
+                                    Click="CloseConfirmDialogButton_Click"
+                                    ToolTip="Fechar" />
+                        </Grid>
+
+                        <Border Background="#081420"
+                                BorderBrush="{StaticResource Line}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="14"
+                                Margin="0,0,0,18">
+                            <TextBlock x:Name="ConfirmMessageText"
+                                       Text="Deseja excluir?"
+                                       Foreground="#E9F3FF"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       LineHeight="22" />
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource ModalCancelButton}"
+                                    Margin="0,0,10,0"
+                                    Click="CloseConfirmDialogButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock Text="Cancelar" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource ConfirmDeleteButton}"
+                                    Click="ConfirmDeleteButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
+                                    <TextBlock Text="Excluir" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

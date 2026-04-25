@@ -1,0 +1,15 @@
+bin/
+obj/
+Compartilhar/
+.vs/
+
+*.user
+*.suo
+*.cache
+*.pdb
+*.zip
+
+publish/
+artifacts/
+
+dados.json
