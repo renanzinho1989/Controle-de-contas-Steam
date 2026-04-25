@@ -1,61 +1,27 @@
 # Controle de Contas Steam
 
-Aplicativo desktop em WPF para gerenciar contas Steam, drops e profit por conta.
+## PT-BR
 
-## Funcionalidades
+Aplicativo para Windows para gerenciar contas Steam, drops e profit por conta.
 
-- Dashboard de contas com vitorias, bans e rank
-- Tela de drops pendentes
-- Cadastro e edicao de contas com PIN
-- Controle de drops por conta
-- Profit por conta com total e media
-- Aplicacao em instancia unica
+### Como usar
 
-## Tecnologias
+1. Baixe o arquivo da **Release** no GitHub.
+2. Extraia o `.zip`.
+3. Execute `ControleDeContasSteam.exe`.
 
-- .NET 9
-- C#
-- WPF
-- XAML
-- JSON
+Funciona em Windows 10/11 64-bit.
 
-## Como rodar
+---
 
-```powershell
-dotnet restore
-dotnet build
-dotnet run
-```
+## EN
 
-## Publicacao
+Windows application for managing Steam accounts, drops, and profit per account.
 
-```powershell
-dotnet publish .\ControleDeContasSteam.csproj -c Release -r win-x64 --self-contained false
-```
+### How to use
 
-## Dados locais
+1. Download the **Release** file from GitHub.
+2. Extract the `.zip`.
+3. Run `ControleDeContasSteam.exe`.
 
-Os dados editados no programa ficam salvos localmente em:
-
-```text
-%LocalAppData%\ControleDeContasSteam\dados.json
-```
-
-Esse arquivo nao faz parte do repositorio e nao deve ser enviado para o GitHub.
-
-## PIN inicial
-
-No primeiro uso, o PIN padrao e:
-
-```text
-1234
-```
-
-Recomenda-se alterar apos abrir o aplicativo.
-
-## Estrutura principal
-
-- `MainWindow.xaml`: layout principal
-- `MainWindow.xaml.cs`: logica da interface
-- `App.xaml.cs`: inicializacao e controle de instancia unica
-- `Assets/`: imagens e icones usados na interface
+Works on Windows 10/11 64-bit.
