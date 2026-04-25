@@ -97,6 +97,7 @@ public partial class MainWindow : Window
     private bool _isAccountPasswordVisible;
     private bool _syncingNewAccountPassword;
     private bool _isNewAccountPasswordVisible;
+    private string _currentSection = "accounts";
 
     public ObservableCollection<SteamAccount> Accounts { get; } = new();
     public ObservableCollection<SteamAccount> PendingDropAccounts { get; } = new();
@@ -167,6 +168,265 @@ public partial class MainWindow : Window
         MaximizeRestoreButton.Content = WindowState == WindowState.Maximized ? "\uE923" : "\uE922";
     }
 
+    private static string L(string pt, string en)
+    {
+        return AppLocalization.Text(pt, en);
+    }
+
+    private void LanguageButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string code)
+        {
+            SetLanguage(code);
+        }
+    }
+
+    private void SetLanguage(string? code, bool save = true)
+    {
+        AppLocalization.SetLanguage(code);
+        _database.Language = AppLocalization.CurrentLanguageCode;
+        UpdateLanguageButtons();
+        ApplyLanguage();
+        RefreshLocalizedCollections();
+        UpdateCurrentSectionHeader();
+        UpdateDashboard();
+
+        if (save)
+        {
+            SaveData(L("Idioma alterado.", "Language changed."));
+        }
+    }
+
+    private void UpdateLanguageButtons()
+    {
+        UpdateLanguageButton(PtLanguageButton, "pt");
+        UpdateLanguageButton(EnLanguageButton, "en");
+    }
+
+    private void UpdateLanguageButton(Button button, string code)
+    {
+        var isActive = string.Equals(AppLocalization.CurrentLanguageCode, code, StringComparison.OrdinalIgnoreCase);
+        button.Foreground = (Brush)FindResource(isActive ? "Text" : "Muted");
+        button.Background = isActive ? SteamAccount.ToBrush("#0E2436") : Brushes.Transparent;
+        button.BorderBrush = isActive ? (Brush)FindResource("Blue") : Brushes.Transparent;
+        button.Opacity = isActive ? 1 : 0.9;
+    }
+
+    private void ApplyLanguage()
+    {
+        Title = L("Controle de Contas Steam", "Steam Account Manager");
+        TitleBarAppNameText.Text = Title;
+        LoginTitleText.Text = Title;
+        LoginSubtitleText.Text = L("Acesse suas contas protegidas com PIN", "Access your PIN-protected accounts");
+        EnterButtonText.Text = L("Entrar", "Enter");
+        ShowPinHelpButtonText.Text = L("Alterar PIN", "Change PIN");
+        AddAccountButtonText.Text = L("Adicionar Conta", "Add Account");
+        RefreshButtonText.Text = L("Atualizar", "Refresh");
+
+        NavAccountsText.Text = L("Contas Steam", "Steam Accounts");
+        NavDropsText.Text = L("Drops", "Drops");
+        NavNewAccountText.Text = L("Nova Conta", "New Account");
+        NavProfitText.Text = L("Profit por Conta", "Profit by Account");
+        NavSettingsText.Text = L("Configura\u00E7\u00F5es", "Settings");
+        SidebarProtectedText.Text = L("Sistema protegido", "Protected system");
+
+        SummaryTotalAccountsLabelText.Text = L("Total de contas", "Total accounts");
+        SummaryBestVictoryLabelText.Text = L("Maior vit\u00F3ria", "Best victory");
+        SummaryBannedAccountsLabelText.Text = L("Contas banidas", "Banned accounts");
+        SummaryBestRankLabelText.Text = L("Maior rank", "Highest rank");
+
+        AccountsHeaderAccountText.Text = L("Conta", "Account");
+        AccountsHeaderPasswordText.Text = L("Senha", "Password");
+        AccountsHeaderLinkText.Text = L("Link", "Link");
+        AccountsHeaderVictoriesText.Text = L("Vit\u00F3rias", "Victories");
+        AccountsHeaderBanText.Text = L("Ban", "Ban");
+        AccountsHeaderRankText.Text = L("Rank Premier", "Premier Rank");
+        AccountsHeaderEditText.Text = L("Editar", "Edit");
+        AccountsHeaderDeleteText.Text = L("Excluir", "Delete");
+
+        ReportsSummaryTitleText.Text = L("Resumo de contas", "Account summary");
+        ReportsLocalFileTitleText.Text = L("Arquivo local", "Local file");
+        ReportsLocalFileSubtitleText.Text = L("Os dados ficam salvos neste computador.", "The data is stored on this computer.");
+
+        SettingsTitleText.Text = L("Alterar PIN de acesso", "Change access PIN");
+        SettingsSubtitleText.Text = L("Use 4 d\u00EDgitos para manter suas contas protegidas.", "Use 4 digits to keep your accounts protected.");
+        SettingsCurrentPinLabelText.Text = L("PIN atual", "Current PIN");
+        SettingsNewPinLabelText.Text = L("Novo PIN", "New PIN");
+        SettingsConfirmPinLabelText.Text = L("Confirmar novo PIN", "Confirm new PIN");
+        SavePinButton.Content = L("Salvar novo PIN", "Save new PIN");
+
+        DropsPageTitleText.Text = L("Drops pendentes", "Pending drops");
+        DropsPageSubtitleText.Text = L("Veja rapidamente quais contas ainda precisam de drop.", "Quickly see which accounts still need a drop.");
+        DropsPendingLabelText.Text = L("Contas pendentes", "Pending accounts");
+        DropsActiveLabelText.Text = L("Contas com drop", "Accounts with drop");
+        DropsNextResetLabelText.Text = L("Pr\u00F3ximo reset", "Next reset");
+        DropsHeaderAccountText.Text = L("Conta", "Account");
+        DropsHeaderStatusText.Text = L("Status", "Status");
+        DropsHeaderActionText.Text = L("A\u00E7\u00E3o", "Action");
+        UndoDropButtonText.Text = L("Desfazer", "Undo");
+
+        ProfitPageTitleText.Text = L("Profit por Conta", "Profit by Account");
+        ProfitPageSubtitleText.Text = L("Gerencie o profit dos drops adicionados para cada conta.", "Manage the profit from drops added to each account.");
+        ProfitTotalDropsLabelText.Text = L("Total de drops", "Total drops");
+        ProfitTotalValueLabelText.Text = L("Valor total", "Total value");
+        ProfitAverageValueLabelText.Text = L("M\u00E9dia por drop", "Average per drop");
+        ProfitAccountsListTitleText.Text = L("Contas cadastradas", "Registered accounts");
+        ProfitSelectedAccountLabelText.Text = L("Conta selecionada", "Selected account");
+        AddDropButtonLabelText.Text = L("Adicionar Drop", "Add Drop");
+        ProfitDropsTableTitleText.Text = L("Drops adicionados", "Added drops");
+        ProfitHeaderItemsText.Text = L("Itens", "Items");
+        ProfitHeaderNameText.Text = L("Nome", "Name");
+        ProfitHeaderConditionText.Text = L("Condi\u00E7\u00E3o", "Condition");
+        ProfitHeaderValueText.Text = AppLocalization.IsEnglish ? "Value ($)" : "Valor (R$)";
+        ProfitHeaderAddedAtText.Text = L("Adicionado em", "Added on");
+        ProfitHeaderActionsText.Text = L("A\u00E7\u00F5es", "Actions");
+
+        NewAccountPageTitleText.Text = L("Nova Conta", "New Account");
+        NewAccountPageSubtitleText.Text = L("Cadastre uma nova conta Steam de forma r\u00E1pida e organizada.", "Register a new Steam account quickly and neatly.");
+        NewAccountNameLabelText.Text = L("Nome", "Name");
+        NewAccountPasswordLabelText.Text = L("Senha", "Password");
+        NewAccountUrlLabelText.Text = "URL";
+        NewAccountVictoriesLabelText.Text = L("Vit\u00F3rias", "Victories");
+        NewAccountBanLabelText.Text = L("Ban (dias)", "Ban (days)");
+        NewAccountRankLabelText.Text = L("Rank Premier", "Premier Rank");
+        NewAccountCancelButtonText.Text = L("Cancelar", "Cancel");
+        NewAccountSaveButtonText.Text = L("Salvar conta", "Save account");
+        NewAccountInfoRun1.Text = L("Drops s\u00E3o gerenciados", "Drops are managed");
+        NewAccountInfoRun2.Text = L("na aba ", "in the ");
+        NewAccountInfoRun3.Text = L("Drops.", "Drops tab.");
+
+        ModalNameLabelText.Text = L("Nome", "Name");
+        ModalPasswordLabelText.Text = L("Senha", "Password");
+        ModalUrlLabelText.Text = "URL";
+        ModalVictoriesLabelText.Text = L("Vit\u00F3rias", "Victories");
+        ModalBanLabelText.Text = L("Ban em dias", "Ban in days");
+        ModalRankLabelText.Text = L("Rank CS2", "CS2 Rank");
+        ModalCancelButtonText.Text = L("Cancelar", "Cancel");
+
+        DropModalAccountLabelText.Text = L("Conta", "Account");
+        DropModalTypeLabelText.Text = L("Tipo", "Type");
+        DropModalNameLabelText.Text = L("Nome", "Name");
+        DropModalItemsLabelText.Text = L("Itens", "Items");
+        DropModalConditionLabelText.Text = L("Condi\u00E7\u00E3o", "Condition");
+        DropModalValueLabelText.Text = AppLocalization.IsEnglish ? "Value ($)" : "Valor (R$)";
+        DropModalCancelButtonText.Text = L("Cancelar", "Cancel");
+
+        ConfirmSubtitleText.Text = L("Essa a\u00E7\u00E3o n\u00E3o pode ser desfeita.", "This action cannot be undone.");
+        ConfirmCancelButtonText.Text = L("Cancelar", "Cancel");
+        ConfirmDeleteButtonText.Text = L("Excluir", "Delete");
+        CloseModalOverlayButton.ToolTip = L("Fechar", "Close");
+        CloseDropModalOverlayButton.ToolTip = L("Fechar", "Close");
+        CloseConfirmOverlayButton.ToolTip = L("Fechar", "Close");
+
+        UpdateDropSelectorTexts();
+        UpdateCurrentSectionHeader();
+        SetAccountPasswordVisibility(_isAccountPasswordVisible);
+        SetNewAccountPasswordVisibility(_isNewAccountPasswordVisible);
+
+        if (IsDefaultStatusText(StatusText.Text) &&
+            IsDefaultStatusText(DropsStatusText.Text) &&
+            IsDefaultStatusText(DropByAccountStatusText.Text))
+        {
+            SetStatusText(L("Pronto", "Ready"));
+        }
+    }
+
+    private static bool IsDefaultStatusText(string? text)
+    {
+        return string.IsNullOrWhiteSpace(text) ||
+               string.Equals(text, "Pronto", StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(text, "Ready", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void UpdateCurrentSectionHeader()
+    {
+        switch (_currentSection)
+        {
+            case "drops":
+                SectionTitleText.Text = L("Drops", "Drops");
+                SectionSubtitleText.Text = L("Acompanhe quais contas ainda precisam de drop.", "Track which accounts still need a drop.");
+                break;
+            case "new-account":
+                SectionTitleText.Text = L("Nova Conta", "New Account");
+                SectionSubtitleText.Text = L("Cadastre uma nova conta Steam.", "Register a new Steam account.");
+                break;
+            case "reports":
+            case "drops-by-account":
+                SectionTitleText.Text = L("Profit por Conta", "Profit by Account");
+                SectionSubtitleText.Text = L("Gerencie o profit dos drops adicionados para cada conta.", "Manage the profit from drops added to each account.");
+                break;
+            case "settings":
+                SectionTitleText.Text = L("Configura\u00E7\u00F5es", "Settings");
+                SectionSubtitleText.Text = L("Ajuste o PIN de acesso e confira o arquivo de dados.", "Adjust the access PIN and review the data file.");
+                break;
+            default:
+                SectionTitleText.Text = L("Contas Steam", "Steam Accounts");
+                SectionSubtitleText.Text = L("Vis\u00E3o geral das contas cadastradas.", "Overview of registered accounts.");
+                break;
+        }
+    }
+
+    private void UpdateDropSelectorTexts()
+    {
+        DropCategoryPistolItem.Content = L("Pistol", "Pistol");
+        DropCategoryRifleItem.Content = L("Rifle", "Rifle");
+        DropCategorySmgItem.Content = L("Submetralhadoras", "SMGs");
+        DropCategoryHeavyItem.Content = L("Pesadas", "Heavy");
+        DropCategoryOtherItem.Content = L("Outro", "Other");
+
+        DropConditionNoneItem.Content = "None";
+        DropConditionFactoryItem.Content = L("Nova de F\u00E1brica", "Factory New");
+        DropConditionMinimalItem.Content = L("Pouco Desgastada", "Minimal Wear");
+        DropConditionFieldItem.Content = L("Testada em Campo", "Field-Tested");
+        DropConditionWornItem.Content = L("Bem Desgastada", "Well-Worn");
+        DropConditionBattleItem.Content = L("Veterana de Guerra", "Battle-Scarred");
+
+        var selectedCategory = ReadComboBoxText(DropCategoryBox);
+        var selectedWeapon = ReadComboBoxText(DropWeaponBox);
+        PopulateDropWeapons(selectedCategory, selectedWeapon);
+        SetComboBoxSelection(DropConditionBox, ReadComboBoxText(DropConditionBox));
+    }
+
+    private void RefreshLocalizedCollections()
+    {
+        foreach (var account in Accounts)
+        {
+            account.RefreshLocalizedProperties();
+        }
+
+        foreach (var drop in AccountDrops)
+        {
+            drop.RefreshLocalizedProperties();
+        }
+
+        RefreshOpenModalTexts();
+        RefreshDropsByAccountView();
+        SyncPendingDropAccounts();
+    }
+
+    private void RefreshOpenModalTexts()
+    {
+        if (ModalOverlay.Visibility == Visibility.Visible)
+        {
+            var isEditing = _editingAccount is not null;
+            ModalTitleText.Text = isEditing ? L("Editar Conta", "Edit Account") : L("Adicionar Conta", "Add Account");
+            ModalSubtitleText.Text = isEditing
+                ? L("Atualize os dados da conta Steam.", "Update the Steam account details.")
+                : L("Cadastre uma nova conta Steam.", "Register a new Steam account.");
+            ModalSaveButtonText.Text = isEditing ? L("Salvar", "Save") : L("Salvar conta", "Save account");
+        }
+
+        if (DropModalOverlay.Visibility == Visibility.Visible)
+        {
+            var isEditing = _editingDrop is not null;
+            DropModalTitleText.Text = isEditing ? L("Editar Drop", "Edit Drop") : L("Adicionar Drop", "Add Drop");
+            DropModalSubtitleText.Text = isEditing
+                ? L("Atualize os dados do drop selecionado.", "Update the selected drop details.")
+                : L("Cadastre um novo drop para a conta selecionada.", "Register a new drop for the selected account.");
+            SaveDropButtonText.Text = isEditing ? L("Salvar Drop", "Save Drop") : L("Adicionar Drop", "Add Drop");
+        }
+    }
+
     private void ToggleMaximizeRestore()
     {
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
@@ -197,6 +457,11 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(_database.Pin))
         {
             _database.Pin = "1234";
+        }
+
+        if (string.IsNullOrWhiteSpace(_database.Language))
+        {
+            _database.Language = "pt";
         }
 
         Accounts.Clear();
@@ -234,7 +499,8 @@ public partial class MainWindow : Window
         }
 
         ApplyDailyBanDecay();
-        SaveData(fileWasMissing ? "Base inicial criada." : null);
+        SetLanguage(_database.Language, false);
+        SaveData(fileWasMissing ? L("Base inicial criada.", "Initial database created.") : null);
     }
 
     private static AppDatabase CreateSeedDatabase()
@@ -242,6 +508,7 @@ public partial class MainWindow : Window
         return new AppDatabase
         {
             Pin = "1234",
+            Language = "pt",
             LastBanDecayDate = GetBanCycleDate(DateTime.Now),
             LastBanCheckTime = DateTime.Now
         };
@@ -316,6 +583,7 @@ public partial class MainWindow : Window
 
     private void SaveData(string? status = null)
     {
+        _database.Language = AppLocalization.CurrentLanguageCode;
         _database.Accounts = Accounts.ToList();
         _database.Drops = AccountDrops.ToList();
         _database.LastUpdated = DateTime.Now;
@@ -341,11 +609,11 @@ public partial class MainWindow : Window
             PinErrorText.Text = "";
             LoginView.Visibility = Visibility.Collapsed;
             AppView.Visibility = Visibility.Visible;
-            SetStatus("Acesso liberado.");
+            SetStatus(L("Acesso liberado.", "Access granted."));
             return;
         }
 
-        PinErrorText.Text = "PIN incorreto. O PIN inicial e 1234.";
+        PinErrorText.Text = L("PIN incorreto. O PIN inicial \u00E9 1234.", "Incorrect PIN. The default PIN is 1234.");
         ClearPinBoxes();
         PinBox1.Focus();
     }
@@ -418,7 +686,7 @@ public partial class MainWindow : Window
         AccountPasswordVisibleBox.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         AccountPasswordBox.Visibility = isVisible ? Visibility.Collapsed : Visibility.Visible;
         AccountPasswordVisibilityButton.Content = isVisible ? "\uE8F8" : "\uE890";
-        AccountPasswordVisibilityButton.ToolTip = isVisible ? "Ocultar senha" : "Mostrar senha";
+        AccountPasswordVisibilityButton.ToolTip = isVisible ? L("Ocultar senha", "Hide password") : L("Mostrar senha", "Show password");
 
         if (isVisible)
         {
@@ -473,7 +741,7 @@ public partial class MainWindow : Window
         NewAccountPasswordVisibleBox.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         NewAccountPasswordBox.Visibility = isVisible ? Visibility.Collapsed : Visibility.Visible;
         NewAccountPasswordVisibilityButton.Content = isVisible ? "\uE8F8" : "\uE890";
-        NewAccountPasswordVisibilityButton.ToolTip = isVisible ? "Ocultar senha" : "Mostrar senha";
+        NewAccountPasswordVisibilityButton.ToolTip = isVisible ? L("Ocultar senha", "Hide password") : L("Mostrar senha", "Show password");
 
         if (isVisible)
         {
@@ -537,7 +805,7 @@ public partial class MainWindow : Window
 
     private void ShowPinHelpButton_Click(object sender, RoutedEventArgs e)
     {
-        PinErrorText.Text = "Entre com o PIN e altere em Configuracoes. PIN inicial: 1234.";
+        PinErrorText.Text = L("Entre com o PIN e altere em Configura\u00E7\u00F5es. PIN inicial: 1234.", "Enter with the PIN and change it in Settings. Default PIN: 1234.");
     }
 
     private void NavButton_Click(object sender, RoutedEventArgs e)
@@ -550,6 +818,7 @@ public partial class MainWindow : Window
 
     private void SelectSection(string section)
     {
+        _currentSection = section;
         ListPanel.Visibility = section == "accounts" ? Visibility.Visible : Visibility.Collapsed;
         DropsPanel.Visibility = section == "drops" ? Visibility.Visible : Visibility.Collapsed;
         NewAccountPanel.Visibility = section == "new-account" ? Visibility.Visible : Visibility.Collapsed;
@@ -564,36 +833,27 @@ public partial class MainWindow : Window
         switch (section)
         {
             case "drops":
-                SectionTitleText.Text = "Drops";
-                SectionSubtitleText.Text = "Acompanhe quais contas ainda precisam de drop.";
                 ActivateNavButton(NavDropsButton);
                 view.SortDescriptions.Add(new SortDescription(nameof(SteamAccount.DropActive), ListSortDirection.Ascending));
                 break;
             case "new-account":
-                SectionTitleText.Text = "Nova Conta";
-                SectionSubtitleText.Text = "Cadastre uma nova conta Steam.";
                 ActivateNavButton(NavRankingButton);
                 ClearNewAccountForm();
                 break;
             case "reports":
             case "drops-by-account":
-                SectionTitleText.Text = "Profit por Conta";
-                SectionSubtitleText.Text = "Gerencie o profit dos drops adicionados para cada conta.";
                 ActivateNavButton(NavReportsButton);
                 RefreshDropsByAccountView();
                 break;
             case "settings":
-                SectionTitleText.Text = "Configuracoes";
-                SectionSubtitleText.Text = "Ajuste o PIN de acesso e confira o arquivo de dados.";
                 ActivateNavButton(NavSettingsButton);
                 break;
             default:
-                SectionTitleText.Text = "Contas Steam";
-                SectionSubtitleText.Text = "Vis\u00E3o geral das contas cadastradas.";
                 ActivateNavButton(NavAccountsButton);
                 break;
         }
 
+        UpdateCurrentSectionHeader();
         view.Refresh();
     }
 
@@ -649,7 +909,7 @@ public partial class MainWindow : Window
         var name = NewAccountNameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            NewAccountErrorText.Text = "Informe o nome da conta.";
+            NewAccountErrorText.Text = L("Informe o nome da conta.", "Enter the account name.");
             return;
         }
 
@@ -666,14 +926,15 @@ public partial class MainWindow : Window
 
         Accounts.Add(account);
         UpdateDashboard();
-        SaveData("Conta adicionada.");
+        SaveData(L("Conta adicionada.", "Account added."));
         SelectSection("accounts");
     }
 
     private void OpenAddAccountButton_Click(object sender, RoutedEventArgs e)
     {
         _editingAccount = null;
-        ModalTitleText.Text = "Adicionar Conta";
+        ModalTitleText.Text = L("Adicionar Conta", "Add Account");
+        ModalSubtitleText.Text = L("Cadastre uma nova conta Steam.", "Register a new Steam account.");
         ModalErrorText.Text = "";
         AccountNameBox.Text = "";
         SetAccountPassword("");
@@ -682,6 +943,7 @@ public partial class MainWindow : Window
         AccountVictoriesBox.Text = "0";
         AccountBanBox.Text = "0";
         AccountRankBox.Text = "0";
+        ModalSaveButtonText.Text = L("Salvar conta", "Save account");
         ModalOverlay.Visibility = Visibility.Visible;
         AccountNameBox.Focus();
     }
@@ -697,7 +959,7 @@ public partial class MainWindow : Window
         var name = AccountNameBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            ModalErrorText.Text = "Informe o nome da conta.";
+            ModalErrorText.Text = L("Informe o nome da conta.", "Enter the account name.");
             return;
         }
 
@@ -715,7 +977,7 @@ public partial class MainWindow : Window
         }
 
         UpdateDashboard();
-        SaveData(_editingAccount is null ? "Conta adicionada." : "Conta atualizada.");
+        SaveData(_editingAccount is null ? L("Conta adicionada.", "Account added.") : L("Conta atualizada.", "Account updated."));
         ModalOverlay.Visibility = Visibility.Collapsed;
         _editingAccount = null;
     }
@@ -758,7 +1020,8 @@ public partial class MainWindow : Window
         }
 
         _editingAccount = account;
-        ModalTitleText.Text = "Editar Conta";
+        ModalTitleText.Text = L("Editar Conta", "Edit Account");
+        ModalSubtitleText.Text = L("Atualize os dados da conta Steam.", "Update the Steam account details.");
         ModalErrorText.Text = "";
         AccountNameBox.Text = account.Name;
         SetAccountPassword(account.Password);
@@ -767,6 +1030,7 @@ public partial class MainWindow : Window
         AccountVictoriesBox.Text = account.Victories.ToString(CultureInfo.InvariantCulture);
         AccountBanBox.Text = account.Ban.ToString(CultureInfo.InvariantCulture);
         SetSelectedRank(account.RankCS2);
+        ModalSaveButtonText.Text = L("Salvar", "Save");
         ModalOverlay.Visibility = Visibility.Visible;
         AccountNameBox.Focus();
     }
@@ -778,7 +1042,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        ShowDeleteConfirmation("Excluir conta", $"Excluir a conta {account.Name}?", () =>
+        ShowDeleteConfirmation(
+            L("Excluir conta", "Delete account"),
+            string.Format(AppLocalization.CurrentCulture, L("Excluir a conta {0}?", "Delete account {0}?"), account.Name),
+            () =>
         {
             Accounts.Remove(account);
             foreach (var drop in AccountDrops.Where(drop => drop.AccountId == account.Id).ToList())
@@ -792,7 +1059,7 @@ public partial class MainWindow : Window
             }
 
             UpdateDashboard();
-            SaveData("Conta excluida.");
+            SaveData(L("Conta exclu\u00EDda.", "Account deleted."));
         });
     }
 
@@ -831,12 +1098,12 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrWhiteSpace(account.Password))
         {
-            SetStatus("Essa conta nao tem senha cadastrada.");
+            SetStatus(L("Essa conta n\u00E3o tem senha cadastrada.", "This account has no saved password."));
             return;
         }
 
         Clipboard.SetText(account.Password);
-        SetStatus($"Senha de {account.Name} copiada.");
+        SetStatus(string.Format(AppLocalization.CurrentCulture, L("Senha de {0} copiada.", "Password for {0} copied."), account.Name));
     }
 
     private void OpenUrlButton_Click(object sender, RoutedEventArgs e)
@@ -848,25 +1115,25 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrWhiteSpace(account.Url))
         {
-            SetStatus("Essa conta nao tem URL cadastrada.");
+            SetStatus(L("Essa conta n\u00E3o tem URL cadastrada.", "This account has no saved URL."));
             return;
         }
 
         try
         {
             Process.Start(new ProcessStartInfo(account.Url) { UseShellExecute = true });
-            SetStatus($"Abrindo perfil de {account.Name}.");
+            SetStatus(string.Format(AppLocalization.CurrentCulture, L("Abrindo perfil de {0}.", "Opening profile for {0}."), account.Name));
         }
         catch
         {
-            SetStatus("Nao foi possivel abrir a URL.");
+            SetStatus(L("N\u00E3o foi poss\u00EDvel abrir a URL.", "Could not open the URL."));
         }
     }
 
     private void DropCheckBox_Click(object sender, RoutedEventArgs e)
     {
         UpdateDashboard();
-        SaveData("Status de drop atualizado.");
+        SaveData(L("Status de drop atualizado.", "Drop status updated."));
     }
 
     private void MarkDropButton_Click(object sender, RoutedEventArgs e)
@@ -880,7 +1147,7 @@ public partial class MainWindow : Window
         _lastMarkedDropAccount = account;
         UndoDropButton.Visibility = Visibility.Visible;
         UpdateDashboard();
-        SaveData($"Drop marcado para {account.Name}.");
+        SaveData(string.Format(AppLocalization.CurrentCulture, L("Drop marcado para {0}.", "Drop marked for {0}."), account.Name));
     }
 
     private void UndoLastDropButton_Click(object sender, RoutedEventArgs e)
@@ -896,7 +1163,7 @@ public partial class MainWindow : Window
         _lastMarkedDropAccount = null;
         UndoDropButton.Visibility = Visibility.Collapsed;
         UpdateDashboard();
-        SaveData($"Drop desfeito para {account.Name}.");
+        SaveData(string.Format(AppLocalization.CurrentCulture, L("Drop desfeito para {0}.", "Drop undone for {0}."), account.Name));
     }
 
     private void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -906,7 +1173,7 @@ public partial class MainWindow : Window
         LoadData();
         UpdateDashboard();
         SelectSection("accounts");
-        SetStatus("Dados recarregados.");
+        SetStatus(L("Dados recarregados.", "Data reloaded."));
     }
 
     private void ChangePinButton_Click(object sender, RoutedEventArgs e)
@@ -918,31 +1185,31 @@ public partial class MainWindow : Window
         if (current != _database.Pin)
         {
             SettingsMessageText.Foreground = (Brush)FindResource("Red");
-            SettingsMessageText.Text = "PIN atual incorreto.";
+            SettingsMessageText.Text = L("PIN atual incorreto.", "Current PIN is incorrect.");
             return;
         }
 
         if (next.Length != 4 || next.Any(character => !char.IsDigit(character)))
         {
             SettingsMessageText.Foreground = (Brush)FindResource("Red");
-            SettingsMessageText.Text = "O novo PIN precisa ter 4 digitos.";
+            SettingsMessageText.Text = L("O novo PIN precisa ter 4 d\u00EDgitos.", "The new PIN must have 4 digits.");
             return;
         }
 
         if (next != confirm)
         {
             SettingsMessageText.Foreground = (Brush)FindResource("Red");
-            SettingsMessageText.Text = "A confirmacao nao confere.";
+            SettingsMessageText.Text = L("A confirma\u00E7\u00E3o n\u00E3o confere.", "The confirmation does not match.");
             return;
         }
 
         _database.Pin = next;
-        SaveData("PIN alterado.");
+        SaveData(L("PIN alterado.", "PIN changed."));
         CurrentPinBox.Clear();
         NewPinBox.Clear();
         ConfirmPinBox.Clear();
         SettingsMessageText.Foreground = (Brush)FindResource("Green");
-        SettingsMessageText.Text = "PIN alterado com sucesso.";
+        SettingsMessageText.Text = L("PIN alterado com sucesso.", "PIN changed successfully.");
     }
 
     private void UpdateDashboard()
@@ -963,15 +1230,21 @@ public partial class MainWindow : Window
         BestVictoryText.Text = bestVictory.ToString(CultureInfo.InvariantCulture);
         BannedAccountsText.Text = bannedAccounts.ToString(CultureInfo.InvariantCulture);
         BestRankText.Text = bestRank <= 0
-            ? "Sem Premier"
-            : bestRank.ToString("N0", new CultureInfo("pt-BR"));
+            ? L("Sem Premier", "No Premier")
+            : bestRank.ToString("N0", BrazilianCulture);
         DropsPendingPageText.Text = missingDrops.ToString(CultureInfo.InvariantCulture);
         DropsActivePageText.Text = activeDrops.ToString(CultureInfo.InvariantCulture);
-        DropsNextResetPageText.Text = nextReset.ToString("dddd, HH'h'", new CultureInfo("pt-BR"));
-        DropsFooterText.Text = $"{missingDrops} contas sem drop";
-        TableFooterText.Text = $"{total} contas | {missingDrops} drops faltando";
+        DropsNextResetPageText.Text = nextReset.ToString("dddd, HH'h'", AppLocalization.CurrentCulture);
+        DropsFooterText.Text = AppLocalization.IsEnglish
+            ? $"{missingDrops} accounts without drop"
+            : $"{missingDrops} contas sem drop";
+        TableFooterText.Text = AppLocalization.IsEnglish
+            ? $"{total} accounts | {missingDrops} pending drops"
+            : $"{total} contas | {missingDrops} drops faltando";
         UpdateBanFooterText();
-        LoginFooterText.Text = $"Sistema protegido - ultima atualizacao: hoje, {DateTime.Now:HH:mm}";
+        LoginFooterText.Text = AppLocalization.IsEnglish
+            ? $"Protected system - last update: today, {DateTime.Now:HH:mm}"
+            : $"Sistema protegido - \u00FAltima atualiza\u00E7\u00E3o: hoje, {DateTime.Now:HH:mm}";
         if (DropsByAccountPanel.Visibility == Visibility.Visible)
         {
             RefreshDropsByAccountView();
@@ -1013,8 +1286,12 @@ public partial class MainWindow : Window
     {
         var checkTime = _database.LastBanCheckTime == default ? DateTime.Now : _database.LastBanCheckTime;
         var text = checkTime.Date == DateTime.Today
-            ? $"Bans conferidos hoje as {checkTime:HH:mm} | atualiza as 06:00"
-            : $"Bans conferidos em {checkTime:dd/MM} as {checkTime:HH:mm} | atualiza as 06:00";
+            ? AppLocalization.IsEnglish
+                ? $"Bans checked today at {checkTime:HH:mm} | updates at 06:00"
+                : $"Bans conferidos hoje \u00E0s {checkTime:HH:mm} | atualiza \u00E0s 06:00"
+            : AppLocalization.IsEnglish
+                ? $"Bans checked on {checkTime:MM/dd} at {checkTime:HH:mm} | updates at 06:00"
+                : $"Bans conferidos em {checkTime:dd/MM} \u00E0s {checkTime:HH:mm} | atualiza \u00E0s 06:00";
 
         BanUpdateFooterText.Text = text;
         DropsBanUpdateFooterText.Text = text;
@@ -1063,10 +1340,16 @@ public partial class MainWindow : Window
         DropStatsTotalText.Text = totalDrops.ToString(CultureInfo.InvariantCulture);
         DropStatsValueText.Text = FormatCurrency(totalValue);
         DropStatsAverageText.Text = FormatCurrency(averageValue);
-        SelectedDropAccountNameText.Text = _selectedDropsAccount?.Name ?? "Nenhuma conta selecionada";
-        SelectedDropAccountCountText.Text = $"{SelectedAccountDrops.Count} drops adicionados";
-        ShowingDropCountText.Text = $"Mostrando {SelectedAccountDrops.Count} drops";
-        SelectedAccountTotalText.Text = $"Total da conta: {FormatCurrency(totalValue)}";
+        SelectedDropAccountNameText.Text = _selectedDropsAccount?.Name ?? L("Nenhuma conta selecionada", "No account selected");
+        SelectedDropAccountCountText.Text = AppLocalization.IsEnglish
+            ? $"{SelectedAccountDrops.Count} drops added"
+            : $"{SelectedAccountDrops.Count} drops adicionados";
+        ShowingDropCountText.Text = AppLocalization.IsEnglish
+            ? $"Showing {SelectedAccountDrops.Count} drops"
+            : $"Mostrando {SelectedAccountDrops.Count} drops";
+        SelectedAccountTotalText.Text = AppLocalization.IsEnglish
+            ? $"Account total: {FormatCurrency(totalValue)}"
+            : $"Total da conta: {FormatCurrency(totalValue)}";
         AddDropButton.IsEnabled = _selectedDropsAccount is not null;
     }
 
@@ -1090,21 +1373,21 @@ public partial class MainWindow : Window
     {
         if (_selectedDropsAccount is null)
         {
-            SetStatus("Selecione uma conta para adicionar drop.");
+            SetStatus(L("Selecione uma conta para adicionar drop.", "Select an account to add a drop."));
             return;
         }
 
         _editingDrop = null;
-        DropModalTitleText.Text = "Adicionar Drop";
-        DropModalSubtitleText.Text = "Cadastre um novo drop para a conta selecionada.";
+        DropModalTitleText.Text = L("Adicionar Drop", "Add Drop");
+        DropModalSubtitleText.Text = L("Cadastre um novo drop para a conta selecionada.", "Register a new drop for the selected account.");
         DropModalErrorText.Text = "";
         DropAccountBox.Text = _selectedDropsAccount.Name;
         SelectDropWeapon("AK-47");
         DropNameBox.Text = "";
-        SetComboBoxSelection(DropConditionBox, "Nova de FÃ¡brica");
+        SetComboBoxSelection(DropConditionBox, "Nova de F\u00E1brica");
         UpdateDropConditionForSelectedItem();
-        DropValueBox.Text = "0,00";
-        SaveDropButtonText.Text = "Adicionar Drop";
+        DropValueBox.Text = AppLocalization.IsEnglish ? "0.00" : "0,00";
+        SaveDropButtonText.Text = L("Adicionar Drop", "Add Drop");
         DropModalOverlay.Visibility = Visibility.Visible;
         DropNameBox.Focus();
     }
@@ -1118,16 +1401,16 @@ public partial class MainWindow : Window
 
         _editingDrop = drop;
         var account = Accounts.FirstOrDefault(item => item.Id == drop.AccountId);
-        DropModalTitleText.Text = "Editar Drop";
-        DropModalSubtitleText.Text = "Atualize os dados do drop selecionado.";
+        DropModalTitleText.Text = L("Editar Drop", "Edit Drop");
+        DropModalSubtitleText.Text = L("Atualize os dados do drop selecionado.", "Update the selected drop details.");
         DropModalErrorText.Text = "";
         DropAccountBox.Text = account?.Name ?? "";
         SelectDropWeapon(drop.Weapon);
         DropNameBox.Text = drop.Name;
         SetComboBoxSelection(DropConditionBox, string.IsNullOrWhiteSpace(drop.Condition) ? "None" : drop.Condition);
         UpdateDropConditionForSelectedItem();
-        DropValueBox.Text = drop.Value.ToString("N2", BrazilianCulture);
-        SaveDropButtonText.Text = "Salvar Drop";
+        DropValueBox.Text = drop.Value.ToString("N2", AppLocalization.CurrentCulture);
+        SaveDropButtonText.Text = L("Salvar Drop", "Save Drop");
         DropModalOverlay.Visibility = Visibility.Visible;
         DropNameBox.Focus();
     }
@@ -1139,11 +1422,18 @@ public partial class MainWindow : Window
             return;
         }
 
-        ShowDeleteConfirmation("Excluir drop", $"Excluir o drop {drop.Weapon} {drop.Name}?", () =>
+        ShowDeleteConfirmation(
+            L("Excluir drop", "Delete drop"),
+            string.Format(
+                AppLocalization.CurrentCulture,
+                L("Excluir o drop {0} {1}?", "Delete drop {0} {1}?"),
+                AppLocalization.TranslateItem(drop.Weapon),
+                drop.Name),
+            () =>
         {
             AccountDrops.Remove(drop);
             RefreshDropsByAccountView();
-            SaveData("Drop excluido.");
+            SaveData(L("Drop exclu\u00EDdo.", "Drop deleted."));
         });
     }
 
@@ -1188,13 +1478,21 @@ public partial class MainWindow : Window
         DropWeaponBox.Items.Clear();
         foreach (var weapon in weapons)
         {
-            DropWeaponBox.Items.Add(new ComboBoxItem { Content = weapon });
+            DropWeaponBox.Items.Add(new ComboBoxItem
+            {
+                Tag = weapon,
+                Content = AppLocalization.TranslateItem(weapon)
+            });
         }
 
         if (!string.IsNullOrWhiteSpace(selectedWeapon) &&
             !weapons.Any(weapon => string.Equals(weapon, selectedWeapon, StringComparison.OrdinalIgnoreCase)))
         {
-            DropWeaponBox.Items.Add(new ComboBoxItem { Content = selectedWeapon });
+            DropWeaponBox.Items.Add(new ComboBoxItem
+            {
+                Tag = selectedWeapon,
+                Content = AppLocalization.TranslateItem(selectedWeapon)
+            });
         }
 
         if (!string.IsNullOrWhiteSpace(selectedWeapon))
@@ -1238,7 +1536,7 @@ public partial class MainWindow : Window
         var selectedCondition = ReadComboBoxText(DropConditionBox);
         if (string.IsNullOrWhiteSpace(selectedCondition) || string.Equals(selectedCondition, "None", StringComparison.OrdinalIgnoreCase))
         {
-            SetComboBoxSelection(DropConditionBox, "Nova de FÃ¡brica");
+            SetComboBoxSelection(DropConditionBox, "Nova de F\u00E1brica");
         }
     }
 
@@ -1251,7 +1549,7 @@ public partial class MainWindow : Window
     {
         if (_selectedDropsAccount is null && _editingDrop is null)
         {
-            DropModalErrorText.Text = "Selecione uma conta.";
+            DropModalErrorText.Text = L("Selecione uma conta.", "Select an account.");
             return;
         }
 
@@ -1261,19 +1559,19 @@ public partial class MainWindow : Window
 
         if (string.IsNullOrWhiteSpace(weapon))
         {
-            DropModalErrorText.Text = "Selecione o item.";
+            DropModalErrorText.Text = L("Selecione o item.", "Select the item.");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            DropModalErrorText.Text = "Informe o nome do item.";
+            DropModalErrorText.Text = L("Informe o nome do item.", "Enter the item name.");
             return;
         }
 
         if (!TryParseMoney(DropValueBox.Text, out var value))
         {
-            DropModalErrorText.Text = "Informe um valor valido.";
+            DropModalErrorText.Text = L("Informe um valor v\u00E1lido.", "Enter a valid value.");
             return;
         }
 
@@ -1302,7 +1600,7 @@ public partial class MainWindow : Window
         DropModalOverlay.Visibility = Visibility.Collapsed;
         _editingDrop = null;
         RefreshDropsByAccountView();
-        SaveData("Drop salvo.");
+        SaveData(L("Drop salvo.", "Drop saved."));
     }
 
     private void MoneyTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -1328,7 +1626,7 @@ public partial class MainWindow : Window
     private static string ReadComboBoxText(ComboBox comboBox)
     {
         return comboBox.SelectedItem is ComboBoxItem item
-            ? item.Content?.ToString() ?? ""
+            ? item.Tag?.ToString() ?? item.Content?.ToString() ?? ""
             : comboBox.Text.Trim();
     }
 
@@ -1336,7 +1634,8 @@ public partial class MainWindow : Window
     {
         foreach (var item in comboBox.Items.OfType<ComboBoxItem>())
         {
-            if (string.Equals(item.Content?.ToString(), value, StringComparison.OrdinalIgnoreCase))
+            var itemValue = item.Tag?.ToString() ?? item.Content?.ToString() ?? "";
+            if (string.Equals(itemValue, value, StringComparison.OrdinalIgnoreCase))
             {
                 comboBox.SelectedItem = item;
                 return;
@@ -1379,13 +1678,74 @@ public partial class MainWindow : Window
 
     private static string FormatCurrency(decimal value)
     {
-        return value.ToString("C2", BrazilianCulture);
+        return value.ToString("C2", AppLocalization.CurrentCulture);
+    }
+}
+
+public static class AppLocalization
+{
+    private static readonly CultureInfo PortugueseCulture = new("pt-BR");
+    private static readonly CultureInfo EnglishCulture = new("en-US");
+
+    public static string CurrentLanguageCode { get; private set; } = "pt";
+    public static CultureInfo CurrentCulture => IsEnglish ? EnglishCulture : PortugueseCulture;
+    public static bool IsEnglish => string.Equals(CurrentLanguageCode, "en", StringComparison.OrdinalIgnoreCase);
+
+    public static void SetLanguage(string? code)
+    {
+        CurrentLanguageCode = string.Equals(code, "en", StringComparison.OrdinalIgnoreCase) ? "en" : "pt";
+    }
+
+    public static string Text(string pt, string en)
+    {
+        return IsEnglish ? en : pt;
+    }
+
+    public static string TranslateCondition(string? condition)
+    {
+        return NormalizeCondition(condition) switch
+        {
+            "Nova de F\u00E1brica" => Text("Nova de F\u00E1brica", "Factory New"),
+            "Pouco Desgastada" => Text("Pouco Desgastada", "Minimal Wear"),
+            "Testada em Campo" => Text("Testada em Campo", "Field-Tested"),
+            "Bem Desgastada" => Text("Bem Desgastada", "Well-Worn"),
+            "Veterana de Guerra" => Text("Veterana de Guerra", "Battle-Scarred"),
+            "None" => "None",
+            _ => condition ?? ""
+        };
+    }
+
+    public static string TranslateItem(string? item)
+    {
+        return (item ?? "").Trim() switch
+        {
+            "Facas" => Text("Facas", "Knives"),
+            "Caixa" => Text("Caixa", "Case"),
+            "Terminal" => Text("Terminal", "Terminal"),
+            _ => item ?? ""
+        };
+    }
+
+    private static string NormalizeCondition(string? condition)
+    {
+        return (condition ?? "").Trim() switch
+        {
+            "Factory New" => "Nova de F\u00E1brica",
+            "Minimal Wear" => "Pouco Desgastada",
+            "Field-Tested" => "Testada em Campo",
+            "Well-Worn" => "Bem Desgastada",
+            "Battle-Scarred" => "Veterana de Guerra",
+            "Nova de Fabrica" => "Nova de F\u00E1brica",
+            "Nova de FÃ¡brica" => "Nova de F\u00E1brica",
+            _ => string.IsNullOrWhiteSpace(condition) ? "None" : condition.Trim()
+        };
     }
 }
 
 public sealed class AppDatabase
 {
     public string Pin { get; set; } = "1234";
+    public string Language { get; set; } = "pt";
     public DateTime LastUpdated { get; set; } = DateTime.Now;
     public DateTime LastBanDecayDate { get; set; } = DateTime.Today;
     public DateTime LastBanCheckTime { get; set; } = DateTime.Now;
@@ -1406,7 +1766,9 @@ public sealed class DropAccountSummary
     public int DropCount { get; }
     public bool IsSelected { get; }
     public string Name => Account.Name;
-    public string DropCountText => DropCount == 1 ? "1 drop adicionado" : $"{DropCount} drops adicionados";
+    public string DropCountText => DropCount == 1
+        ? AppLocalization.Text("1 drop adicionado", "1 drop added")
+        : AppLocalization.Text($"{DropCount} drops adicionados", $"{DropCount} drops added");
 
     [JsonIgnore]
     public Brush CardBackgroundBrush => IsSelected ? SteamAccount.ToBrush("#0D3157") : SteamAccount.ToBrush("#0A1724");
@@ -1419,7 +1781,7 @@ public sealed class AccountDrop : INotifyPropertyChanged
 {
     private string _weapon = "";
     private string _name = "";
-    private string _condition = "Nova de FÃ¡brica";
+    private string _condition = "Nova de F\u00E1brica";
     private decimal _value;
     private DateTime _addedAt = DateTime.Now;
 
@@ -1431,7 +1793,13 @@ public sealed class AccountDrop : INotifyPropertyChanged
     public string Weapon
     {
         get => _weapon;
-        set => SetField(ref _weapon, value);
+        set
+        {
+            if (SetField(ref _weapon, value))
+            {
+                OnPropertyChanged(nameof(WeaponDisplayText));
+            }
+        }
     }
 
     public string Name
@@ -1448,6 +1816,7 @@ public sealed class AccountDrop : INotifyPropertyChanged
             if (SetField(ref _condition, value))
             {
                 OnPropertyChanged(nameof(ConditionBrush));
+                OnPropertyChanged(nameof(ConditionDisplayText));
             }
         }
     }
@@ -1477,10 +1846,16 @@ public sealed class AccountDrop : INotifyPropertyChanged
     }
 
     [JsonIgnore]
-    public string ValueText => Value.ToString("C2", new CultureInfo("pt-BR"));
+    public string WeaponDisplayText => AppLocalization.TranslateItem(Weapon);
 
     [JsonIgnore]
-    public string AddedAtText => AddedAt.ToString("dd/MM/yyyy HH:mm", new CultureInfo("pt-BR"));
+    public string ConditionDisplayText => AppLocalization.TranslateCondition(Condition);
+
+    [JsonIgnore]
+    public string ValueText => Value.ToString("C2", AppLocalization.CurrentCulture);
+
+    [JsonIgnore]
+    public string AddedAtText => AddedAt.ToString(AppLocalization.IsEnglish ? "MM/dd/yyyy HH:mm" : "dd/MM/yyyy HH:mm", AppLocalization.CurrentCulture);
 
     [JsonIgnore]
     public Brush ConditionBrush
@@ -1489,16 +1864,37 @@ public sealed class AccountDrop : INotifyPropertyChanged
         {
             return Condition switch
             {
-                "Nova de FÃ¡brica" or "Nova de Fabrica" => SteamAccount.ToBrush("#39C970"),
+                "Nova de F\u00E1brica" or "Nova de Fabrica" or "Factory New" => SteamAccount.ToBrush("#39C970"),
                 "Pouco Desgastada" => SteamAccount.ToBrush("#58A6FF"),
+                "Minimal Wear" => SteamAccount.ToBrush("#58A6FF"),
                 "Testada em Campo" => SteamAccount.ToBrush("#E4C25A"),
+                "Field-Tested" => SteamAccount.ToBrush("#E4C25A"),
                 "Bem Desgastada" => SteamAccount.ToBrush("#F39A32"),
+                "Well-Worn" => SteamAccount.ToBrush("#F39A32"),
                 "Veterana de Guerra" => SteamAccount.ToBrush("#C981FF"),
+                "Battle-Scarred" => SteamAccount.ToBrush("#C981FF"),
                 "None" => SteamAccount.ToBrush("#8DA4B5"),
                 _ => SteamAccount.ToBrush("#E9F3FF")
             };
         }
     }
+
+    public void RefreshLocalizedProperties()
+    {
+        OnPropertyChanged(nameof(WeaponDisplayText));
+        OnPropertyChanged(nameof(ConditionDisplayText));
+        OnPropertyChanged(nameof(ValueText));
+        OnPropertyChanged(nameof(AddedAtText));
+        OnPropertyChanged(nameof(ConditionBrush));
+        OnPropertyChanged(nameof(EditToolTip));
+        OnPropertyChanged(nameof(DeleteToolTip));
+    }
+
+    [JsonIgnore]
+    public string EditToolTip => AppLocalization.Text("Editar drop", "Edit drop");
+
+    [JsonIgnore]
+    public string DeleteToolTip => AppLocalization.Text("Excluir drop", "Delete drop");
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
@@ -1637,17 +2033,44 @@ public sealed class SteamAccount : INotifyPropertyChanged
     public bool DropActive
     {
         get => _dropActive;
-        set => SetField(ref _dropActive, value);
+        set
+        {
+            if (SetField(ref _dropActive, value))
+            {
+                OnPropertyChanged(nameof(PendingDropStatusText));
+                OnPropertyChanged(nameof(MarkDropButtonText));
+            }
+        }
     }
 
     [JsonIgnore]
     public bool IsUnrankedPremier => RankFormatter.IsUnranked(RankCS2);
 
     [JsonIgnore]
-    public string RankDisplayText => IsUnrankedPremier ? "Premier" : RankCS2;
+    public string RankDisplayText => IsUnrankedPremier ? AppLocalization.Text("Premier", "Premier") : RankCS2;
 
     [JsonIgnore]
-    public string BanDisplayText => Ban < 0 ? "-" : Ban > 0 ? $"{Ban} dias" : "0 dias";
+    public string BanDisplayText => Ban < 0 ? "-" : Ban > 0
+        ? AppLocalization.Text($"{Ban} dias", $"{Ban} days")
+        : AppLocalization.Text("0 dias", "0 days");
+
+    [JsonIgnore]
+    public string PendingDropStatusText => AppLocalization.Text("Drop pendente", "Pending drop");
+
+    [JsonIgnore]
+    public string MarkDropButtonText => AppLocalization.Text("Marcar drop", "Mark drop");
+
+    [JsonIgnore]
+    public string CopyPasswordToolTip => AppLocalization.Text("Copiar senha", "Copy password");
+
+    [JsonIgnore]
+    public string OpenUrlToolTip => AppLocalization.Text("Abrir perfil", "Open profile");
+
+    [JsonIgnore]
+    public string EditToolTip => AppLocalization.Text("Editar", "Edit");
+
+    [JsonIgnore]
+    public string DeleteToolTip => AppLocalization.Text("Excluir", "Delete");
 
     [JsonIgnore]
     public Brush BanBackgroundBrush => Ban > 0 ? ToBrush("#32151C") : Brushes.Transparent;
@@ -1831,5 +2254,17 @@ public sealed class SteamAccount : INotifyPropertyChanged
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public void RefreshLocalizedProperties()
+    {
+        OnPropertyChanged(nameof(BanDisplayText));
+        OnPropertyChanged(nameof(RankDisplayText));
+        OnPropertyChanged(nameof(PendingDropStatusText));
+        OnPropertyChanged(nameof(MarkDropButtonText));
+        OnPropertyChanged(nameof(CopyPasswordToolTip));
+        OnPropertyChanged(nameof(OpenUrlToolTip));
+        OnPropertyChanged(nameof(EditToolTip));
+        OnPropertyChanged(nameof(DeleteToolTip));
     }
 }

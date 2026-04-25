@@ -363,6 +363,14 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="TitleLanguageButton" BasedOn="{StaticResource TitleButton}" TargetType="Button">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        </Style>
+
         <Style x:Key="GridIconButton" TargetType="Button">
             <Setter Property="Width" Value="44" />
             <Setter Property="Height" Value="36" />
@@ -618,7 +626,8 @@
                            RenderOptions.BitmapScalingMode="HighQuality"
                            Margin="0,0,8,0"
                            VerticalAlignment="Center" />
-                    <TextBlock Text="Controle de Contas Steam"
+                    <TextBlock x:Name="TitleBarAppNameText"
+                               Text="Controle de Contas Steam"
                                Foreground="{StaticResource Text}"
                                FontSize="12"
                                FontWeight="SemiBold"
@@ -627,6 +636,9 @@
                 <StackPanel Grid.Column="1"
                             Orientation="Horizontal"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button x:Name="PtLanguageButton" Content="PT" Tag="pt" Style="{StaticResource TitleLanguageButton}" Click="LanguageButton_Click" />
+                    <TextBlock Text="-" Foreground="{StaticResource Muted}" FontSize="11" VerticalAlignment="Center" Margin="0,0,0,1" />
+                    <Button x:Name="EnLanguageButton" Content="EN" Tag="en" Style="{StaticResource TitleLanguageButton}" Click="LanguageButton_Click" />
                     <Button Content="&#xE921;" Style="{StaticResource TitleButton}" Click="MinimizeButton_Click" />
                     <Button x:Name="MaximizeRestoreButton" Content="&#xE922;" Style="{StaticResource TitleButton}" Click="MaximizeRestoreButton_Click" />
                     <Button Content="&#xE8BB;" Style="{StaticResource CloseTitleButton}" Click="CloseButton_Click" />
@@ -659,8 +671,8 @@
                            Stretch="Uniform"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,6" />
-                    <TextBlock Text="Controle de Contas Steam" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,4" />
-                    <TextBlock Text="Acesse suas contas protegidas com PIN" Foreground="{StaticResource Text}" Opacity="0.86" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,18" />
+                    <TextBlock x:Name="LoginTitleText" Text="Controle de Contas Steam" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,4" />
+                    <TextBlock x:Name="LoginSubtitleText" Text="Acesse suas contas protegidas com PIN" Foreground="{StaticResource Text}" Opacity="0.86" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,18" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
                         <PasswordBox x:Name="PinBox1" Style="{StaticResource PinBox}" Margin="0,0,12,0" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
                         <PasswordBox x:Name="PinBox2" Style="{StaticResource PinBox}" Margin="0,0,12,0" PreviewTextInput="PinBox_PreviewTextInput" PasswordChanged="PinBox_PasswordChanged" KeyDown="PinBox_KeyDown" />
@@ -671,13 +683,13 @@
                     <Button Height="36" Click="EnterButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
-                            <TextBlock Text="Entrar" />
+                            <TextBlock x:Name="EnterButtonText" Text="Entrar" />
                         </StackPanel>
                     </Button>
                     <Button Height="34" Style="{StaticResource GhostButton}" Margin="0,10,0,0" Click="ShowPinHelpButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" Foreground="{StaticResource Text}" />
-                            <TextBlock Text="Alterar PIN" />
+                            <TextBlock x:Name="ShowPinHelpButtonText" Text="Alterar PIN" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -728,7 +740,7 @@
                                         <ImageBrush ImageSource="Assets/icon-steam.png" Stretch="Uniform" />
                                     </Rectangle.OpacityMask>
                                 </Rectangle>
-                                <TextBlock Grid.Column="1" Text="Contas Steam" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NavAccountsText" Grid.Column="1" Text="Contas Steam" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
                         <Button x:Name="NavDropsButton" Tag="drops" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
@@ -742,7 +754,7 @@
                                         <ImageBrush ImageSource="Assets/icon-gift.png" Stretch="Uniform" />
                                     </Rectangle.OpacityMask>
                                 </Rectangle>
-                                <TextBlock Grid.Column="1" Text="Drops" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NavDropsText" Grid.Column="1" Text="Drops" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
                         <Button x:Name="NavRankingButton" Tag="new-account" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
@@ -756,7 +768,7 @@
                                         <ImageBrush ImageSource="Assets/icon-user.png" Stretch="Uniform" />
                                     </Rectangle.OpacityMask>
                                 </Rectangle>
-                                <TextBlock Grid.Column="1" Text="Nova Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NavNewAccountText" Grid.Column="1" Text="Nova Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
                         <Button x:Name="NavReportsButton" Tag="drops-by-account" Style="{StaticResource NavButton}" Click="NavButton_Click" Margin="0,0,0,7">
@@ -770,7 +782,7 @@
                                         <ImageBrush ImageSource="Assets/icon-profit.png" Stretch="Uniform" />
                                     </Rectangle.OpacityMask>
                                 </Rectangle>
-                                <TextBlock Grid.Column="1" Text="Profit por Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NavProfitText" Grid.Column="1" Text="Profit por Conta" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
                         <Button x:Name="NavSettingsButton" Tag="settings" Style="{StaticResource NavButton}" Click="NavButton_Click">
@@ -780,7 +792,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="22" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="Configurações" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NavSettingsText" Grid.Column="1" Text="Configurações" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" FontSize="15" VerticalAlignment="Center" />
                             </Grid>
                         </Button>
                     </StackPanel>
@@ -788,7 +800,7 @@
                         <Border Height="1" Background="{StaticResource Line}" Margin="0,0,0,15" />
                         <StackPanel Orientation="Horizontal" Margin="8,0,0,8">
                             <TextBlock Text="&#xE83D;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Green}" FontSize="16" Width="26" />
-                            <TextBlock Text="Sistema protegido" Foreground="{StaticResource Muted}" FontSize="13" VerticalAlignment="Center" />
+                            <TextBlock x:Name="SidebarProtectedText" Text="Sistema protegido" Foreground="{StaticResource Muted}" FontSize="13" VerticalAlignment="Center" />
                         </StackPanel>
                         <TextBlock Text="v1.0.0" Foreground="#647889" FontSize="12" Margin="40,0,0,0" />
                     </StackPanel>
@@ -816,13 +828,13 @@
                         <Button Click="OpenAddAccountButton_Click" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
-                                <TextBlock Text="Adicionar Conta" />
+                                <TextBlock x:Name="AddAccountButtonText" Text="Adicionar Conta" />
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource GhostButton}" Click="RefreshButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
-                                <TextBlock Text="Atualizar" />
+                                <TextBlock x:Name="RefreshButtonText" Text="Atualizar" />
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -839,7 +851,7 @@
                                 <TextBlock Text="&#xE716;" FontFamily="Segoe MDL2 Assets" Foreground="#00A7B8" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Total de contas" Foreground="{StaticResource Muted}" FontSize="15" />
+                                    <TextBlock x:Name="SummaryTotalAccountsLabelText" Text="Total de contas" Foreground="{StaticResource Muted}" FontSize="15" />
                                 <TextBlock x:Name="TotalAccountsText" Text="0" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -854,7 +866,7 @@
                                 <TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Maior vit&#x00F3;ria" Foreground="{StaticResource Muted}" FontSize="15" />
+                                    <TextBlock x:Name="SummaryBestVictoryLabelText" Text="Maior vit&#x00F3;ria" Foreground="{StaticResource Muted}" FontSize="15" />
                                 <TextBlock x:Name="BestVictoryText" Text="0" Foreground="{StaticResource Purple}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -869,7 +881,7 @@
                                 <TextBlock Text="&#xE83D;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Red}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Contas banidas" Foreground="{StaticResource Muted}" FontSize="15" />
+                                    <TextBlock x:Name="SummaryBannedAccountsLabelText" Text="Contas banidas" Foreground="{StaticResource Muted}" FontSize="15" />
                                 <TextBlock x:Name="BannedAccountsText" Text="0" Foreground="{StaticResource Red}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -884,7 +896,7 @@
                                 <TextBlock Text="&#xE735;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Maior rank" Foreground="{StaticResource Muted}" FontSize="15" />
+                                <TextBlock x:Name="SummaryBestRankLabelText" Text="Maior rank" Foreground="{StaticResource Muted}" FontSize="15" />
                                 <TextBlock x:Name="BestRankText" Text="Sem Premier" Foreground="{StaticResource Purple}" FontSize="31" FontWeight="SemiBold" Margin="0,4,0,0" />
                             </StackPanel>
                         </Grid>
@@ -918,8 +930,8 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" Margin="0,0,6,0" />
-                                                <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" />
+                                <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="{Binding CopyPasswordToolTip}" Margin="0,0,6,0" />
+                                <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="{Binding OpenUrlToolTip}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -960,8 +972,8 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" Margin="0,0,6,0" />
-                                                <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" />
+                                <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="{Binding EditToolTip}" Margin="0,0,6,0" />
+                                <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="{Binding DeleteToolTip}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -1008,14 +1020,14 @@
                                                 <ColumnDefinition Width="92" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Conta" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Text="Senha" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="2" Text="Link" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="3" Text="Vit&#x00F3;rias" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="4" Text="Ban" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="5" Text="Rank Premier" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="6" Text="Editar" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="7" Text="Excluir" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderAccountText" Text="Conta" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderPasswordText" Grid.Column="1" Text="Senha" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderLinkText" Grid.Column="2" Text="Link" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderVictoriesText" Grid.Column="3" Text="Vit&#x00F3;rias" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderBanText" Grid.Column="4" Text="Ban" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderRankText" Grid.Column="5" Text="Rank Premier" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderEditText" Grid.Column="6" Text="Editar" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AccountsHeaderDeleteText" Grid.Column="7" Text="Excluir" Foreground="{StaticResource Text}" Opacity="0.82" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         </Grid>
                                     </Border>
                                 </Grid>
@@ -1045,8 +1057,8 @@
 
                                                     <TextBlock Text="{Binding Name}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                        <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" Margin="0,0,6,0" />
-                                                        <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" />
+                                    <Button Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="{Binding CopyPasswordToolTip}" Margin="0,0,6,0" />
+                                    <Button Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="{Binding OpenUrlToolTip}" />
                                                     </StackPanel>
                                                     <TextBlock Grid.Column="2" Text="{Binding Victories}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     <TextBlock Grid.Column="3" Text="{Binding Ban}" Foreground="#F4FAFF" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -1058,8 +1070,8 @@
                                                     </Border>
                                                     <CheckBox Grid.Column="5" IsChecked="{Binding DropActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DropCheckBox}" Click="DropCheckBox_Click" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     <StackPanel Grid.Column="6" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                        <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" Margin="0,0,6,0" />
-                                                        <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" />
+                                    <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="{Binding EditToolTip}" Margin="0,0,6,0" />
+                                    <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="{Binding DeleteToolTip}" />
                                                     </StackPanel>
                                                     <Grid Grid.ColumnSpan="9" Background="{StaticResource Panel}" Panel.ZIndex="5">
                                                         <Grid.ColumnDefinitions>
@@ -1080,8 +1092,8 @@
                                                             </Border>
                                                             <TextBlock Text="{Binding Name}" Foreground="White" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                         </StackPanel>
-                                                        <Button Grid.Column="1" Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="Copiar senha" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        <Button Grid.Column="2" Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="Abrir perfil" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <Button Grid.Column="1" Content="&#xE8C8;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="CopyPasswordButton_Click" ToolTip="{Binding CopyPasswordToolTip}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <Button Grid.Column="2" Content="&#xE8A7;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="OpenUrlButton_Click" ToolTip="{Binding OpenUrlToolTip}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                         <TextBlock Grid.Column="3" Text="{Binding Victories}" Foreground="White" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                         <Border Grid.Column="4" Background="{Binding BanBackgroundBrush}" BorderBrush="{Binding BanBorderBrush}" BorderThickness="1" CornerRadius="5" Height="36" Padding="14,0" HorizontalAlignment="Center" MinWidth="78" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding BanDisplayText}" Foreground="{Binding BanForegroundBrush}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -1093,8 +1105,8 @@
                                                                 <TextBlock Text="{Binding RankDisplayText}" Foreground="{Binding RankTextBrush}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                             </StackPanel>
                                                         </Border>
-                                                        <Button Grid.Column="6" Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="Editar" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                        <Button Grid.Column="7" Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="Excluir" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <Button Grid.Column="6" Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Click="EditAccountButton_Click" ToolTip="{Binding EditToolTip}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                                <Button Grid.Column="7" Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Click="DeleteAccountButton_Click" ToolTip="{Binding DeleteToolTip}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                     </Grid>
                                                 </Grid>
                                             </Border>
@@ -1120,7 +1132,7 @@
                     </Grid.ColumnDefinitions>
                     <Border Style="{StaticResource Card}" Margin="0,0,10,0" VerticalAlignment="Top">
                         <StackPanel>
-                            <TextBlock Text="Resumo de contas" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock x:Name="ReportsSummaryTitleText" Text="Resumo de contas" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
                             <TextBlock x:Name="ReportTotalText" Margin="0,0,0,8" />
                             <TextBlock x:Name="ReportDropsText" Margin="0,0,0,8" />
                             <TextBlock x:Name="ReportWinsText" />
@@ -1128,8 +1140,8 @@
                     </Border>
                     <Border Grid.Column="1" Style="{StaticResource Card}" Margin="10,0,0,0" VerticalAlignment="Top">
                         <StackPanel>
-                            <TextBlock Text="Arquivo local" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
-                            <TextBlock Text="Os dados ficam salvos neste computador." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,8" />
+                            <TextBlock x:Name="ReportsLocalFileTitleText" Text="Arquivo local" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock x:Name="ReportsLocalFileSubtitleText" Text="Os dados ficam salvos neste computador." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,8" />
                             <TextBlock x:Name="DataFileText" FontSize="12" TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
@@ -1138,16 +1150,16 @@
                 <Grid x:Name="SettingsPanel" Grid.Row="2" Visibility="Collapsed">
                     <Border Style="{StaticResource Card}" Width="520" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <StackPanel>
-                            <TextBlock Text="Alterar PIN de acesso" FontSize="17" FontWeight="SemiBold" />
-                            <TextBlock Text="Use 4 digitos para manter suas contas protegidas." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
-                            <TextBlock Text="PIN atual" Style="{StaticResource LabelText}" />
+                            <TextBlock x:Name="SettingsTitleText" Text="Alterar PIN de acesso" FontSize="17" FontWeight="SemiBold" />
+                            <TextBlock x:Name="SettingsSubtitleText" Text="Use 4 digitos para manter suas contas protegidas." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
+                            <TextBlock x:Name="SettingsCurrentPinLabelText" Text="PIN atual" Style="{StaticResource LabelText}" />
                             <PasswordBox x:Name="CurrentPinBox" MaxLength="4" Margin="0,5,0,12" />
-                            <TextBlock Text="Novo PIN" Style="{StaticResource LabelText}" />
+                            <TextBlock x:Name="SettingsNewPinLabelText" Text="Novo PIN" Style="{StaticResource LabelText}" />
                             <PasswordBox x:Name="NewPinBox" MaxLength="4" Margin="0,5,0,12" />
-                            <TextBlock Text="Confirmar novo PIN" Style="{StaticResource LabelText}" />
+                            <TextBlock x:Name="SettingsConfirmPinLabelText" Text="Confirmar novo PIN" Style="{StaticResource LabelText}" />
                             <PasswordBox x:Name="ConfirmPinBox" MaxLength="4" Margin="0,5,0,12" />
                             <TextBlock x:Name="SettingsMessageText" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,12" />
-                            <Button Content="Salvar novo PIN" Width="128" HorizontalAlignment="Left" Click="ChangePinButton_Click" />
+                            <Button x:Name="SavePinButton" Content="Salvar novo PIN" Width="128" HorizontalAlignment="Left" Click="ChangePinButton_Click" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -1172,8 +1184,8 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="10,0,0,18">
-                        <TextBlock Text="Drops pendentes" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
-                        <TextBlock Text="Veja rapidamente quais contas ainda precisam de drop." Foreground="{StaticResource Muted}" FontSize="15" Margin="0,4,0,0" />
+                        <TextBlock x:Name="DropsPageTitleText" Text="Drops pendentes" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
+                        <TextBlock x:Name="DropsPageSubtitleText" Text="Veja rapidamente quais contas ainda precisam de drop." Foreground="{StaticResource Muted}" FontSize="15" Margin="0,4,0,0" />
                     </StackPanel>
 
                     <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,18">
@@ -1187,7 +1199,7 @@
                                     <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Amber}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Contas pendentes" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsPendingLabelText" Text="Contas pendentes" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
                                     <TextBlock x:Name="DropsPendingPageText" Text="0" Foreground="{StaticResource Amber}" FontSize="24" FontWeight="SemiBold" Margin="0,3,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1202,7 +1214,7 @@
                                     <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Green}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Contas com drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsActiveLabelText" Text="Contas com drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
                                     <TextBlock x:Name="DropsActivePageText" Text="0" Foreground="{StaticResource Green}" FontSize="24" FontWeight="SemiBold" Margin="0,3,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1217,7 +1229,7 @@
                                     <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Próximo reset" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
+                                    <TextBlock x:Name="DropsNextResetLabelText" Text="Próximo reset" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="15" />
                                     <TextBlock x:Name="DropsNextResetPageText" Text="Terça-feira, 23h" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1239,9 +1251,9 @@
                                     <ColumnDefinition Width="250" />
                                     <ColumnDefinition Width="210" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Conta" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="28,0,0,0" />
-                                <TextBlock Grid.Column="1" Text="Status" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="Ação" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock x:Name="DropsHeaderAccountText" Text="Conta" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="28,0,0,0" />
+                                <TextBlock x:Name="DropsHeaderStatusText" Grid.Column="1" Text="Status" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <TextBlock x:Name="DropsHeaderActionText" Grid.Column="2" Text="Ação" Foreground="#8DBBE9" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Grid>
                             </Border>
 
@@ -1269,13 +1281,13 @@
                                                 <Border Grid.Column="1" Width="148" Height="30" BorderBrush="#8D6C10" BorderThickness="1" Background="#332B10" CornerRadius="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                         <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Amber}" FontSize="15" Margin="0,0,8,0" />
-                                                        <TextBlock Text="Drop pendente" Foreground="{StaticResource Amber}" FontSize="14" />
+                                                        <TextBlock Text="{Binding PendingDropStatusText}" Foreground="{StaticResource Amber}" FontSize="14" />
                                                     </StackPanel>
                                                 </Border>
                                                 <Button Grid.Column="2" Tag="{Binding}" Width="134" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{StaticResource Blue}" Click="MarkDropButton_Click">
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" Margin="0,0,9,0" />
-                                                        <TextBlock Text="Marcar drop" />
+                                                        <TextBlock Text="{Binding MarkDropButtonText}" />
                                                     </StackPanel>
                                                 </Button>
                                                 </Grid>
@@ -1309,7 +1321,7 @@
                                 Click="UndoLastDropButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="&#xE7A7;" FontFamily="Segoe MDL2 Assets" Margin="0,0,7,0" />
-                                <TextBlock Text="Desfazer" />
+                                <TextBlock x:Name="UndoDropButtonText" Text="Desfazer" />
                             </StackPanel>
                         </Button>
                         <TextBlock x:Name="DropsStatusText"
@@ -1329,8 +1341,8 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="4,0,0,10">
-                        <TextBlock Text="Profit por Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
-                        <TextBlock Text="Gerencie o profit dos drops adicionados para cada conta." Foreground="{StaticResource Text}" Opacity="0.76" FontSize="13" Margin="0,1,0,0" />
+                        <TextBlock x:Name="ProfitPageTitleText" Text="Profit por Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="28" FontWeight="SemiBold" />
+                        <TextBlock x:Name="ProfitPageSubtitleText" Text="Gerencie o profit dos drops adicionados para cada conta." Foreground="{StaticResource Text}" Opacity="0.76" FontSize="13" Margin="0,1,0,0" />
                     </StackPanel>
 
                     <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,10">
@@ -1344,7 +1356,7 @@
                                     <TextBlock Text="&#xE7BF;" FontFamily="Segoe MDL2 Assets" Foreground="#00A7B8" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Total de drops" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="ProfitTotalDropsLabelText" Text="Total de drops" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
                                     <TextBlock x:Name="DropStatsTotalText" Text="0" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1359,7 +1371,7 @@
                                     <TextBlock Text="&#xEAFD;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Purple}" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Valor total" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="ProfitTotalValueLabelText" Text="Valor total" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
                                     <TextBlock x:Name="DropStatsValueText" Text="R$ 0,00" Foreground="#B06AFF" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1374,7 +1386,7 @@
                                     <TextBlock Text="&#xE9D2;" FontFamily="Segoe MDL2 Assets" Foreground="{StaticResource Blue}" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="Media por drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
+                                    <TextBlock x:Name="ProfitAverageValueLabelText" Text="Media por drop" Foreground="{StaticResource Text}" Opacity="0.84" FontSize="13" />
                                     <TextBlock x:Name="DropStatsAverageText" Text="R$ 0,00" Foreground="#58A6FF" FontSize="21" FontWeight="SemiBold" Margin="0,2,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -1395,7 +1407,7 @@
                                     <RowDefinition Height="34" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Contas cadastradas" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                <TextBlock x:Name="ProfitAccountsListTitleText" Text="Contas cadastradas" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
                                 <Border Grid.Row="1" Background="#081420" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="5" Margin="0,0,0,8">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1470,7 +1482,7 @@
                                                 <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#57A7DE" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Border>
                                             <StackPanel>
-                                                <TextBlock Text="Conta selecionada" Foreground="{StaticResource Muted}" FontSize="12" />
+                                                <TextBlock x:Name="ProfitSelectedAccountLabelText" Text="Conta selecionada" Foreground="{StaticResource Muted}" FontSize="12" />
                                                 <TextBlock x:Name="SelectedDropAccountNameText" Text="Nenhuma conta selecionada" FontSize="15" FontWeight="SemiBold" Margin="0,2,0,0" />
                                                 <TextBlock x:Name="SelectedDropAccountCountText" Text="0 drops adicionados" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,1,0,0" />
                                             </StackPanel>
@@ -1478,13 +1490,13 @@
                                         <Button x:Name="AddDropButton" Grid.Column="1" Width="140" Height="32" Background="{StaticResource Blue}" Click="OpenAddDropButton_Click" VerticalAlignment="Center">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" Margin="0,0,8,0" />
-                                                <TextBlock Text="Adicionar Drop" />
+                                                <TextBlock x:Name="AddDropButtonLabelText" Text="Adicionar Drop" />
                                             </StackPanel>
                                         </Button>
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="1" Text="Drops adicionados" FontSize="16" FontWeight="SemiBold" Margin="4,10,0,8" />
+                                <TextBlock x:Name="ProfitDropsTableTitleText" Grid.Row="1" Text="Drops adicionados" FontSize="16" FontWeight="SemiBold" Margin="4,10,0,8" />
 
                                 <Border Grid.Row="2" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="6">
                                     <Grid>
@@ -1502,12 +1514,12 @@
                                                     <ColumnDefinition Width="132" />
                                                     <ColumnDefinition Width="88" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Text="Itens" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                <TextBlock Grid.Column="1" Text="Nome" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0" />
-                                                <TextBlock Grid.Column="2" Text="Condicao" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                <TextBlock Grid.Column="3" Text="Valor (R$)" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                <TextBlock Grid.Column="4" Text="Adicionado em" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                <TextBlock Grid.Column="5" Text="Acoes" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="ProfitHeaderItemsText" Text="Itens" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="ProfitHeaderNameText" Grid.Column="1" Text="Nome" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,0,0" />
+                                                <TextBlock x:Name="ProfitHeaderConditionText" Grid.Column="2" Text="Condicao" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="ProfitHeaderValueText" Grid.Column="3" Text="Valor (R$)" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="ProfitHeaderAddedAtText" Grid.Column="4" Text="Adicionado em" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="ProfitHeaderActionsText" Grid.Column="5" Text="Acoes" Foreground="#8DBBE9" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                         </Border>
                                         <ScrollViewer Grid.Row="1"
@@ -1529,15 +1541,15 @@
                                                                     <ColumnDefinition Width="88" />
                                                                 </Grid.ColumnDefinitions>
                                                                 <Border Width="68" Height="30" Background="#0A1724" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                    <TextBlock Text="{Binding Weapon}" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock Text="{Binding WeaponDisplayText}" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                                 </Border>
                                                                 <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="White" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0,8,0" TextTrimming="CharacterEllipsis" />
-                                                                <TextBlock Grid.Column="2" Text="{Binding Condition}" Foreground="{Binding ConditionBrush}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding ConditionDisplayText}" Foreground="{Binding ConditionBrush}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                                 <TextBlock Grid.Column="3" Text="{Binding ValueText}" Foreground="White" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                                 <TextBlock Grid.Column="4" Text="{Binding AddedAtText}" Foreground="{StaticResource Text}" Opacity="0.86" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                                 <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                    <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Width="34" Height="32" Click="EditDropButton_Click" ToolTip="Editar drop" Margin="0,0,6,0" />
-                                                                    <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Width="34" Height="32" Click="DeleteDropButton_Click" ToolTip="Excluir drop" />
+                                                                    <Button Content="&#xE70F;" Tag="{Binding}" Style="{StaticResource GridIconButton}" Width="34" Height="32" Click="EditDropButton_Click" ToolTip="{Binding EditToolTip}" Margin="0,0,6,0" />
+                                                                    <Button Content="&#xE74D;" Tag="{Binding}" Style="{StaticResource GridDeleteButton}" Width="34" Height="32" Click="DeleteDropButton_Click" ToolTip="{Binding DeleteToolTip}" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </Border>
@@ -1579,11 +1591,11 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Margin="4,0,0,26">
-                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#56A8E8" FontSize="38" VerticalAlignment="Top" Margin="0,2,22,0" />
-                            <StackPanel>
-                                <TextBlock Text="Nova Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="38" FontWeight="SemiBold" />
-                                <TextBlock Text="Cadastre uma nova conta Steam de forma r&#x00E1;pida e organizada." Foreground="{StaticResource Muted}" FontSize="16" Margin="0,3,0,0" />
-                            </StackPanel>
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#56A8E8" FontSize="38" VerticalAlignment="Top" Margin="0,2,22,0" />
+                                <StackPanel>
+                                <TextBlock x:Name="NewAccountPageTitleText" Text="Nova Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="38" FontWeight="SemiBold" />
+                                <TextBlock x:Name="NewAccountPageSubtitleText" Text="Cadastre uma nova conta Steam de forma r&#x00E1;pida e organizada." Foreground="{StaticResource Muted}" FontSize="16" Margin="0,3,0,0" />
+                                </StackPanel>
                         </StackPanel>
 
                         <Border Grid.Row="1"
@@ -1614,7 +1626,7 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Text="Nome" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountNameLabelText" Text="Nome" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1626,7 +1638,7 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="2" Text="Senha" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountPasswordLabelText" Grid.Row="2" Text="Senha" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Row="2" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1641,7 +1653,7 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="4" Text="URL" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountUrlLabelText" Grid.Row="4" Text="URL" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Row="4" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1653,7 +1665,7 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="6" Text="Vit&#x00F3;rias" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountVictoriesLabelText" Grid.Row="6" Text="Vit&#x00F3;rias" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Row="6" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1665,7 +1677,7 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="8" Text="Ban (dias)" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountBanLabelText" Grid.Row="8" Text="Ban (dias)" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Row="8" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1677,7 +1689,7 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBlock Grid.Row="10" Text="Rank Premier" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock x:Name="NewAccountRankLabelText" Grid.Row="10" Text="Rank Premier" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 <Border Grid.Row="10" Grid.Column="1" Background="#081420" BorderBrush="#24394D" BorderThickness="1" CornerRadius="5">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -1694,13 +1706,13 @@
                                     <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,12,0" Click="CancelNewAccountPageButton_Click">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                            <TextBlock Text="Cancelar" />
+                                            <TextBlock x:Name="NewAccountCancelButtonText" Text="Cancelar" />
                                         </StackPanel>
                                     </Button>
                                     <Button Style="{StaticResource ModalActionButton}" MinWidth="170" Click="SaveNewAccountPageButton_Click">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="15" Margin="0,0,9,0" />
-                                            <TextBlock Text="Salvar conta" />
+                                            <TextBlock x:Name="NewAccountSaveButtonText" Text="Salvar conta" />
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
@@ -1713,10 +1725,10 @@
                                     <TextBlock Text="i" Foreground="{StaticResource Blue}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <TextBlock TextWrapping="Wrap" FontSize="15" LineHeight="24">
-                                    <Run Text="Drops s&#x00E3;o gerenciados" />
+                                    <Run x:Name="NewAccountInfoRun1" Text="Drops s&#x00E3;o gerenciados" />
                                     <LineBreak />
-                                    <Run Text="na aba " />
-                                    <Run Text="Drops." Foreground="{StaticResource Blue}" FontWeight="SemiBold" />
+                                    <Run x:Name="NewAccountInfoRun2" Text="na aba " />
+                                    <Run x:Name="NewAccountInfoRun3" Text="Drops." Foreground="{StaticResource Blue}" FontWeight="SemiBold" />
                                 </TextBlock>
                             </StackPanel>
                         </Border>
@@ -1742,9 +1754,10 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel>
                                 <TextBlock x:Name="ModalTitleText" Text="Editar Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="23" FontWeight="SemiBold" />
-                                <TextBlock Text="Atualize os dados da conta Steam." Foreground="{StaticResource Muted}" FontSize="13" Margin="0,4,0,0" />
+                                <TextBlock x:Name="ModalSubtitleText" Text="Atualize os dados da conta Steam." Foreground="{StaticResource Muted}" FontSize="13" Margin="0,4,0,0" />
                             </StackPanel>
-                            <Button Grid.Column="1"
+                            <Button x:Name="CloseModalOverlayButton"
+                                    Grid.Column="1"
                                     Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
                                     Style="{StaticResource GridIconButton}"
@@ -1762,11 +1775,11 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="ModalNameLabelText" Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="AccountNameBox" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Senha" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="ModalPasswordLabelText" Text="Senha" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <Grid>
                                     <PasswordBox x:Name="AccountPasswordBox"
                                                  Padding="9,0,42,0"
@@ -1791,7 +1804,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <TextBlock Text="URL" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                        <TextBlock x:Name="ModalUrlLabelText" Text="URL" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                         <TextBox x:Name="AccountUrlBox" Margin="0,0,0,12" />
 
                         <Grid Margin="0,0,0,12">
@@ -1801,14 +1814,14 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Vit&#x00F3;rias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="ModalVictoriesLabelText" Text="Vit&#x00F3;rias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="AccountVictoriesBox"
                                          Text="0"
                                          PreviewTextInput="NumericTextBox_PreviewTextInput"
                                          DataObject.Pasting="NumericTextBox_Pasting" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Ban em dias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="ModalBanLabelText" Text="Ban em dias" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="AccountBanBox"
                                          Text="0"
                                          PreviewTextInput="NumericTextBox_PreviewTextInput"
@@ -1816,7 +1829,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <TextBlock Text="Rank CS2" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                        <TextBlock x:Name="ModalRankLabelText" Text="Rank CS2" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                         <TextBox x:Name="AccountRankBox"
                                  Text="0"
                                  Margin="0,0,0,12"
@@ -1828,13 +1841,13 @@
                             <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,10,0" Click="CloseModalButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                    <TextBlock Text="Cancelar" />
+                                    <TextBlock x:Name="ModalCancelButtonText" Text="Cancelar" />
                                 </StackPanel>
                             </Button>
                             <Button x:Name="SaveAccountButton" Style="{StaticResource ModalActionButton}" Click="SaveAccountButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                    <TextBlock Text="Salvar" />
+                                    <TextBlock x:Name="ModalSaveButtonText" Text="Salvar" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -1861,7 +1874,8 @@
                                 <TextBlock x:Name="DropModalTitleText" Text="Adicionar Drop" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="21" FontWeight="SemiBold" />
                                 <TextBlock x:Name="DropModalSubtitleText" Text="Cadastre um novo drop para a conta selecionada." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,3,0,0" />
                             </StackPanel>
-                            <Button Grid.Column="1"
+                            <Button x:Name="CloseDropModalOverlayButton"
+                                    Grid.Column="1"
                                     Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
                                     Style="{StaticResource GridIconButton}"
@@ -1879,17 +1893,17 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Conta" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalAccountLabelText" Text="Conta" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="DropAccountBox" IsReadOnly="True" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Tipo" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalTypeLabelText" Text="Tipo" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <ComboBox x:Name="DropCategoryBox">
-                                    <ComboBoxItem Content="Pistol" />
-                                    <ComboBoxItem Content="Rifle" IsSelected="True" />
-                                    <ComboBoxItem Content="Submetralhadoras" />
-                                    <ComboBoxItem Content="Pesadas" />
-                                    <ComboBoxItem Content="Outro" />
+                                    <ComboBoxItem x:Name="DropCategoryPistolItem" Tag="Pistol" Content="Pistol" />
+                                    <ComboBoxItem x:Name="DropCategoryRifleItem" Tag="Rifle" Content="Rifle" IsSelected="True" />
+                                    <ComboBoxItem x:Name="DropCategorySmgItem" Tag="Submetralhadoras" Content="Submetralhadoras" />
+                                    <ComboBoxItem x:Name="DropCategoryHeavyItem" Tag="Pesadas" Content="Pesadas" />
+                                    <ComboBoxItem x:Name="DropCategoryOtherItem" Tag="Outro" Content="Outro" />
                                 </ComboBox>
                             </StackPanel>
                         </Grid>
@@ -1901,11 +1915,11 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalNameLabelText" Text="Nome" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="DropNameBox" />
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Itens" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalItemsLabelText" Text="Itens" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <ComboBox x:Name="DropWeaponBox" />
                             </StackPanel>
                         </Grid>
@@ -1917,18 +1931,18 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Condicao" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalConditionLabelText" Text="Condicao" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <ComboBox x:Name="DropConditionBox">
-                                    <ComboBoxItem Content="None" Foreground="#8DA4B5" />
-                                    <ComboBoxItem Content="Nova de F&#x00E1;brica" Foreground="#39C970" IsSelected="True" />
-                                    <ComboBoxItem Content="Pouco Desgastada" Foreground="#58A6FF" />
-                                    <ComboBoxItem Content="Testada em Campo" Foreground="#E4C25A" />
-                                    <ComboBoxItem Content="Bem Desgastada" Foreground="#F39A32" />
-                                    <ComboBoxItem Content="Veterana de Guerra" Foreground="#C981FF" />
+                                    <ComboBoxItem x:Name="DropConditionNoneItem" Tag="None" Content="None" Foreground="#8DA4B5" />
+                                    <ComboBoxItem x:Name="DropConditionFactoryItem" Tag="Nova de F&#x00E1;brica" Content="Nova de F&#x00E1;brica" Foreground="#39C970" IsSelected="True" />
+                                    <ComboBoxItem x:Name="DropConditionMinimalItem" Tag="Pouco Desgastada" Content="Pouco Desgastada" Foreground="#58A6FF" />
+                                    <ComboBoxItem x:Name="DropConditionFieldItem" Tag="Testada em Campo" Content="Testada em Campo" Foreground="#E4C25A" />
+                                    <ComboBoxItem x:Name="DropConditionWornItem" Tag="Bem Desgastada" Content="Bem Desgastada" Foreground="#F39A32" />
+                                    <ComboBoxItem x:Name="DropConditionBattleItem" Tag="Veterana de Guerra" Content="Veterana de Guerra" Foreground="#C981FF" />
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Valor (R$)" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DropModalValueLabelText" Text="Valor (R$)" Style="{StaticResource LabelText}" Margin="0,0,0,6" />
                                 <TextBox x:Name="DropValueBox"
                                          Text="0,00"
                                          PreviewTextInput="MoneyTextBox_PreviewTextInput"
@@ -1941,7 +1955,7 @@
                             <Button Style="{StaticResource ModalCancelButton}" Margin="0,0,10,0" Click="CloseDropModalButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                    <TextBlock Text="Cancelar" />
+                                    <TextBlock x:Name="DropModalCancelButtonText" Text="Cancelar" />
                                 </StackPanel>
                             </Button>
                             <Button x:Name="SaveDropButton" Style="{StaticResource ModalActionButton}" MinWidth="160" Click="SaveDropButton_Click">
@@ -1992,13 +2006,14 @@
                                                Foreground="#F7FBFF"
                                                FontSize="22"
                                                FontWeight="SemiBold" />
-                                    <TextBlock Text="Essa acao nao pode ser desfeita."
+                                    <TextBlock x:Name="ConfirmSubtitleText" Text="Essa acao nao pode ser desfeita."
                                                Foreground="{StaticResource Muted}"
                                                FontSize="12"
                                                Margin="0,3,0,0" />
                                 </StackPanel>
                             </StackPanel>
-                            <Button Grid.Column="1"
+                            <Button x:Name="CloseConfirmOverlayButton"
+                                    Grid.Column="1"
                                     Content="&#xE8BB;"
                                     FontFamily="Segoe MDL2 Assets"
                                     Style="{StaticResource GridIconButton}"
@@ -2029,14 +2044,14 @@
                                     Click="CloseConfirmDialogButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                    <TextBlock Text="Cancelar" />
+                                    <TextBlock x:Name="ConfirmCancelButtonText" Text="Cancelar" />
                                 </StackPanel>
                             </Button>
                             <Button Style="{StaticResource ConfirmDeleteButton}"
                                     Click="ConfirmDeleteButton_Click">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="13" Margin="0,0,8,0" />
-                                    <TextBlock Text="Excluir" />
+                                    <TextBlock x:Name="ConfirmDeleteButtonText" Text="Excluir" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
