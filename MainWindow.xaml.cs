@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Data;
 using System.Windows.Threading;
+using Microsoft.Win32;
 
 namespace ControleDeContasSteam;
 
@@ -106,6 +107,7 @@ public partial class MainWindow : Window
     public ObservableCollection<AccountDrop> SelectedAccountDrops { get; } = new();
 
     private string DataFile => Path.Combine(_dataFolder, "dados.json");
+    private string BackupFolder => Path.Combine(_dataFolder, "Backups");
 
     public MainWindow()
     {
@@ -254,6 +256,12 @@ public partial class MainWindow : Window
         SettingsNewPinLabelText.Text = L("Novo PIN", "New PIN");
         SettingsConfirmPinLabelText.Text = L("Confirmar novo PIN", "Confirm new PIN");
         SavePinButton.Content = L("Salvar novo PIN", "Save new PIN");
+        SettingsBackupTitleText.Text = L("Backup dos dados", "Data backup");
+        SettingsBackupSubtitleText.Text = L("Crie uma copia do arquivo local com um clique.", "Create a copy of the local file with one click.");
+        SettingsBackupPathLabelText.Text = L("Pasta de backup", "Backup folder");
+        SettingsBackupPathText.Text = BackupFolder;
+        CreateBackupButton.Content = L("Criar backup", "Create backup");
+        ImportBackupButton.Content = L("Importar backup", "Import backup");
 
         DropsPageTitleText.Text = L("Drops pendentes", "Pending drops");
         DropsPageSubtitleText.Text = L("Veja rapidamente quais contas ainda precisam de drop.", "Quickly see which accounts still need a drop.");
@@ -1210,6 +1218,99 @@ public partial class MainWindow : Window
         ConfirmPinBox.Clear();
         SettingsMessageText.Foreground = (Brush)FindResource("Green");
         SettingsMessageText.Text = L("PIN alterado com sucesso.", "PIN changed successfully.");
+    }
+
+    private void CreateBackupButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            SaveData();
+            Directory.CreateDirectory(BackupFolder);
+
+            var backupFileName = $"dados-backup-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json";
+            var backupPath = Path.Combine(BackupFolder, backupFileName);
+            File.Copy(DataFile, backupPath, true);
+
+            SettingsMessageText.Foreground = (Brush)FindResource("Green");
+            SettingsMessageText.Text = AppLocalization.IsEnglish
+                ? $"Backup created: {backupFileName}"
+                : $"Backup criado: {backupFileName}";
+            SetStatus(AppLocalization.IsEnglish
+                ? $"Backup saved in {BackupFolder}"
+                : $"Backup salvo em {BackupFolder}");
+        }
+        catch
+        {
+            SettingsMessageText.Foreground = (Brush)FindResource("Red");
+            SettingsMessageText.Text = L("Nao foi possivel criar o backup.", "Could not create the backup.");
+        }
+    }
+
+    private void ImportBackupButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Directory.CreateDirectory(BackupFolder);
+
+            var dialog = new OpenFileDialog
+            {
+                Title = L("Selecionar backup", "Select backup"),
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Directory.Exists(BackupFolder) ? BackupFolder : _dataFolder,
+                Multiselect = false,
+                CheckFileExists = true
+            };
+
+            if (dialog.ShowDialog(this) != true)
+            {
+                return;
+            }
+
+            var selectedPath = dialog.FileName;
+            ShowDeleteConfirmation(
+                L("Importar backup", "Import backup"),
+                L("Importar este backup e substituir os dados atuais?", "Import this backup and replace the current data?"),
+                () => ImportBackupFile(selectedPath));
+        }
+        catch
+        {
+            SettingsMessageText.Foreground = (Brush)FindResource("Red");
+            SettingsMessageText.Text = L("Nao foi possivel abrir a selecao de backup.", "Could not open the backup selection.");
+        }
+    }
+
+    private void ImportBackupFile(string backupPath)
+    {
+        try
+        {
+            if (!File.Exists(backupPath))
+            {
+                SettingsMessageText.Foreground = (Brush)FindResource("Red");
+                SettingsMessageText.Text = L("Arquivo de backup nao encontrado.", "Backup file not found.");
+                return;
+            }
+
+            var json = File.ReadAllText(backupPath);
+            _ = JsonSerializer.Deserialize<AppDatabase>(json, _jsonOptions) ?? throw new InvalidOperationException();
+
+            File.Copy(backupPath, DataFile, true);
+            LoadData();
+            UpdateDashboard();
+            SelectSection("settings");
+
+            SettingsMessageText.Foreground = (Brush)FindResource("Green");
+            SettingsMessageText.Text = AppLocalization.IsEnglish
+                ? $"Backup imported: {Path.GetFileName(backupPath)}"
+                : $"Backup importado: {Path.GetFileName(backupPath)}";
+            SetStatus(AppLocalization.IsEnglish
+                ? $"Backup restored from {Path.GetFileName(backupPath)}"
+                : $"Backup restaurado de {Path.GetFileName(backupPath)}");
+        }
+        catch
+        {
+            SettingsMessageText.Foreground = (Brush)FindResource("Red");
+            SettingsMessageText.Text = L("Nao foi possivel importar o backup.", "Could not import the backup.");
+        }
     }
 
     private void UpdateDashboard()

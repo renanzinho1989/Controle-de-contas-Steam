@@ -1148,7 +1148,13 @@
                 </Grid>
 
                 <Grid x:Name="SettingsPanel" Grid.Row="2" Visibility="Collapsed">
-                    <Border Style="{StaticResource Card}" Width="520" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="520" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="360" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource Card}" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <StackPanel>
                             <TextBlock x:Name="SettingsTitleText" Text="Alterar PIN de acesso" FontSize="17" FontWeight="SemiBold" />
                             <TextBlock x:Name="SettingsSubtitleText" Text="Use 4 digitos para manter suas contas protegidas." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
@@ -1160,6 +1166,24 @@
                             <PasswordBox x:Name="ConfirmPinBox" MaxLength="4" Margin="0,5,0,12" />
                             <TextBlock x:Name="SettingsMessageText" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,12" />
                             <Button x:Name="SavePinButton" Content="Salvar novo PIN" Width="128" HorizontalAlignment="Left" Click="ChangePinButton_Click" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource Card}" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock x:Name="SettingsBackupTitleText" Text="Backup dos dados" FontSize="17" FontWeight="SemiBold" />
+                            <TextBlock x:Name="SettingsBackupSubtitleText" Text="Crie uma copia do arquivo local com um clique." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
+                            <TextBlock x:Name="SettingsBackupPathLabelText" Text="Pasta de backup" Style="{StaticResource LabelText}" />
+                            <TextBlock x:Name="SettingsBackupPathText" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,16" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="CreateBackupButton" Content="Criar backup" Width="145" HorizontalAlignment="Left" Click="CreateBackupButton_Click" />
+                                <Button x:Name="ImportBackupButton" Grid.Column="2" Content="Importar backup" Width="145" HorizontalAlignment="Right" Style="{StaticResource GhostButton}" Click="ImportBackupButton_Click" />
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -1580,34 +1604,54 @@
                 </Grid>
 
                 <Grid x:Name="NewAccountPanel" Grid.Row="0" Grid.RowSpan="4" Visibility="Collapsed" ClipToBounds="True" Background="{StaticResource Bg}">
-                    <Grid Margin="0,0,0,0">
+                    <Grid Margin="6,10,0,0" HorizontalAlignment="Left">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="700" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="670" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="264" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Margin="4,0,0,26">
-                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" Foreground="#56A8E8" FontSize="38" VerticalAlignment="Top" Margin="0,2,22,0" />
-                                <StackPanel>
+                        <Grid Grid.ColumnSpan="3" Margin="2,0,0,24">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="52" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="48"
+                                    Height="48"
+                                    Background="#091725"
+                                    BorderBrush="#1F3A52"
+                                    BorderThickness="1"
+                                    CornerRadius="24"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="&#xE77B;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           Foreground="#56A8E8"
+                                           FontSize="26"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="18,0,0,0">
                                 <TextBlock x:Name="NewAccountPageTitleText" Text="Nova Conta" FontFamily="{StaticResource DisplayFont}" Foreground="#F7FBFF" FontSize="38" FontWeight="SemiBold" />
                                 <TextBlock x:Name="NewAccountPageSubtitleText" Text="Cadastre uma nova conta Steam de forma r&#x00E1;pida e organizada." Foreground="{StaticResource Muted}" FontSize="16" Margin="0,3,0,0" />
-                                </StackPanel>
-                        </StackPanel>
+                            </StackPanel>
+                        </Grid>
 
                         <Border Grid.Row="1"
+                                Grid.Column="0"
                                 Background="#B20C1A28"
                                 BorderBrush="{StaticResource Line}"
                                 BorderThickness="1"
                                 CornerRadius="7"
-                                Padding="28"
+                                Padding="24"
                                 VerticalAlignment="Top">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="112" />
+                                    <ColumnDefinition Width="104" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -1719,12 +1763,21 @@
                             </Grid>
                         </Border>
 
-                        <Border Grid.Row="1" Grid.Column="1" Width="300" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#B20C1A28" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="7" Padding="22">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="50" Height="50" BorderBrush="{StaticResource Blue}" BorderThickness="2" CornerRadius="25" Margin="0,0,18,0">
+                        <Border Grid.Row="1"
+                                Grid.Column="2"
+                                MinHeight="118"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                Background="#B20C1A28"
+                                BorderBrush="{StaticResource Line}"
+                                BorderThickness="1"
+                                CornerRadius="7"
+                                Padding="18">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                <Border Width="50" Height="50" BorderBrush="{StaticResource Blue}" BorderThickness="2" CornerRadius="25" Margin="0,2,18,0">
                                     <TextBlock Text="i" Foreground="{StaticResource Blue}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <TextBlock TextWrapping="Wrap" FontSize="15" LineHeight="24">
+                                <TextBlock TextWrapping="Wrap" FontSize="15" LineHeight="24" VerticalAlignment="Center">
                                     <Run x:Name="NewAccountInfoRun1" Text="Drops s&#x00E3;o gerenciados" />
                                     <LineBreak />
                                     <Run x:Name="NewAccountInfoRun2" Text="na aba " />
