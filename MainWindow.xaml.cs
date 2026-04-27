@@ -80,8 +80,10 @@ public partial class MainWindow : Window
         "Caixa",
         "Terminal"
     };
+    private const string AppStoragePrefix = "ControleDeContasSteam";
 
-    private readonly string _dataFolder = Path.Combine(
+    private readonly string _dataFolder = Path.GetFullPath(AppContext.BaseDirectory);
+    private readonly string _legacyDataFolder = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "ControleDeContasSteam");
 
@@ -106,8 +108,10 @@ public partial class MainWindow : Window
     public ObservableCollection<DropAccountSummary> DropAccountSummaries { get; } = new();
     public ObservableCollection<AccountDrop> SelectedAccountDrops { get; } = new();
 
-    private string DataFile => Path.Combine(_dataFolder, "dados.json");
-    private string BackupFolder => Path.Combine(_dataFolder, "Backups");
+    private string DataFile => Path.Combine(_dataFolder, $"{AppStoragePrefix}-dados.json");
+    private string LegacyDataFile => Path.Combine(_legacyDataFolder, "dados.json");
+    private string LegacyAppFolderDataFile => Path.Combine(_dataFolder, "dados.json");
+    private string BackupFolder => Path.Combine(_dataFolder, $"{AppStoragePrefix}-Backups");
 
     public MainWindow()
     {
@@ -248,7 +252,8 @@ public partial class MainWindow : Window
 
         ReportsSummaryTitleText.Text = L("Resumo de contas", "Account summary");
         ReportsLocalFileTitleText.Text = L("Arquivo local", "Local file");
-        ReportsLocalFileSubtitleText.Text = L("Os dados ficam salvos neste computador.", "The data is stored on this computer.");
+        ReportsLocalFileSubtitleText.Text = L("Os dados ficam salvos na pasta do aplicativo.", "The data is stored in the application folder.");
+        DataFileText.Text = DataFile;
 
         SettingsTitleText.Text = L("Alterar PIN de acesso", "Change access PIN");
         SettingsSubtitleText.Text = L("Use 4 d\u00EDgitos para manter suas contas protegidas.", "Use 4 digits to keep your accounts protected.");
@@ -257,7 +262,7 @@ public partial class MainWindow : Window
         SettingsConfirmPinLabelText.Text = L("Confirmar novo PIN", "Confirm new PIN");
         SavePinButton.Content = L("Salvar novo PIN", "Save new PIN");
         SettingsBackupTitleText.Text = L("Backup dos dados", "Data backup");
-        SettingsBackupSubtitleText.Text = L("Crie uma copia do arquivo local com um clique.", "Create a copy of the local file with one click.");
+        SettingsBackupSubtitleText.Text = L("Crie uma copia do arquivo local na mesma pasta do aplicativo.", "Create a copy of the local file in the same application folder.");
         SettingsBackupPathLabelText.Text = L("Pasta de backup", "Backup folder");
         SettingsBackupPathText.Text = BackupFolder;
         CreateBackupButton.Content = L("Criar backup", "Create backup");
@@ -443,6 +448,7 @@ public partial class MainWindow : Window
     private void LoadData()
     {
         Directory.CreateDirectory(_dataFolder);
+        TryMigrateLegacyData();
         var fileWasMissing = !File.Exists(DataFile);
 
         if (!fileWasMissing)
@@ -509,6 +515,32 @@ public partial class MainWindow : Window
         ApplyDailyBanDecay();
         SetLanguage(_database.Language, false);
         SaveData(fileWasMissing ? L("Base inicial criada.", "Initial database created.") : null);
+    }
+
+    private void TryMigrateLegacyData()
+    {
+        if (File.Exists(DataFile))
+        {
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(LegacyAppFolderDataFile))
+            {
+                File.Copy(LegacyAppFolderDataFile, DataFile, true);
+                return;
+            }
+
+            if (File.Exists(LegacyDataFile))
+            {
+                File.Copy(LegacyDataFile, DataFile, true);
+            }
+        }
+        catch
+        {
+            // If migration fails, the app will continue with the normal startup flow.
+        }
     }
 
     private static AppDatabase CreateSeedDatabase()
@@ -1227,7 +1259,7 @@ public partial class MainWindow : Window
             SaveData();
             Directory.CreateDirectory(BackupFolder);
 
-            var backupFileName = $"dados-backup-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json";
+            var backupFileName = $"{AppStoragePrefix}-backup-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json";
             var backupPath = Path.Combine(BackupFolder, backupFileName);
             File.Copy(DataFile, backupPath, true);
 
