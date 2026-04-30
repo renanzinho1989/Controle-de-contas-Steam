@@ -1169,23 +1169,34 @@
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="2" Style="{StaticResource Card}" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <StackPanel>
-                            <TextBlock x:Name="SettingsBackupTitleText" Text="Backup dos dados" FontSize="17" FontWeight="SemiBold" />
-                            <TextBlock x:Name="SettingsBackupSubtitleText" Text="Crie uma copia do arquivo local com um clique." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
-                            <TextBlock x:Name="SettingsBackupPathLabelText" Text="Pasta de backup" Style="{StaticResource LabelText}" />
-                            <TextBlock x:Name="SettingsBackupPathText" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,16" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="10" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Button x:Name="CreateBackupButton" Content="Criar backup" Width="145" HorizontalAlignment="Left" Click="CreateBackupButton_Click" />
-                                <Button x:Name="ImportBackupButton" Grid.Column="2" Content="Importar backup" Width="145" HorizontalAlignment="Right" Style="{StaticResource GhostButton}" Click="ImportBackupButton_Click" />
-                            </Grid>
-                        </StackPanel>
-                    </Border>
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock x:Name="SettingsBackupTitleText" Text="Backup dos dados" FontSize="17" FontWeight="SemiBold" />
+                                <TextBlock x:Name="SettingsBackupSubtitleText" Text="Crie uma copia do arquivo local com um clique." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,16" />
+                                <TextBlock x:Name="SettingsBackupPathLabelText" Text="Pasta de backup" Style="{StaticResource LabelText}" />
+                                <TextBlock x:Name="SettingsBackupPathText" Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,16" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="CreateBackupButton" Content="Criar backup" Width="145" HorizontalAlignment="Left" Click="CreateBackupButton_Click" />
+                                    <Button x:Name="ImportBackupButton" Grid.Column="2" Content="Importar backup" Width="145" HorizontalAlignment="Right" Style="{StaticResource GhostButton}" Click="ImportBackupButton_Click" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                            <StackPanel>
+                                <TextBlock x:Name="SettingsDropResetTitleText" Text="Reset dos drops" FontSize="17" FontWeight="SemiBold" />
+                                <TextBlock x:Name="SettingsDropResetSubtitleText" Text="Use se quiser voltar todas as contas para drop pendente." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,14" TextWrapping="Wrap" />
+                                <TextBlock x:Name="SettingsDropResetInfoText" Text="O reset automatico roda toda terca-feira as 23h." Foreground="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,16" />
+                                <Button x:Name="ManualResetDropsButton" Content="Resetar drops agora" Width="160" HorizontalAlignment="Left" Style="{StaticResource GhostButton}" Click="ManualResetDropsButton_Click" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
 
                 <Grid Grid.Row="3" Margin="0,10,0,0">

@@ -267,6 +267,10 @@ public partial class MainWindow : Window
         SettingsBackupPathText.Text = BackupFolder;
         CreateBackupButton.Content = L("Criar backup", "Create backup");
         ImportBackupButton.Content = L("Importar backup", "Import backup");
+        SettingsDropResetTitleText.Text = L("Reset dos drops", "Drop reset");
+        SettingsDropResetSubtitleText.Text = L("Use se quiser voltar todas as contas para drop pendente.", "Use this to mark all accounts as pending drop.");
+        SettingsDropResetInfoText.Text = L("O reset autom\u00E1tico roda toda ter\u00E7a-feira \u00E0s 23h.", "The automatic reset runs every Tuesday at 23:00.");
+        ManualResetDropsButton.Content = L("Resetar drops agora", "Reset drops now");
 
         DropsPageTitleText.Text = L("Drops pendentes", "Pending drops");
         DropsPageSubtitleText.Text = L("Veja rapidamente quais contas ainda precisam de drop.", "Quickly see which accounts still need a drop.");
@@ -513,8 +517,13 @@ public partial class MainWindow : Window
         }
 
         ApplyDailyBanDecay();
+        var dropsReset = ApplyWeeklyDropReset();
         SetLanguage(_database.Language, false);
-        SaveData(fileWasMissing ? L("Base inicial criada.", "Initial database created.") : null);
+        SaveData(fileWasMissing
+            ? L("Base inicial criada.", "Initial database created.")
+            : dropsReset
+                ? L("Drops resetados automaticamente.", "Drops reset automatically.")
+                : null);
     }
 
     private void TryMigrateLegacyData()
@@ -550,7 +559,8 @@ public partial class MainWindow : Window
             Pin = "1234",
             Language = "pt",
             LastBanDecayDate = GetBanCycleDate(DateTime.Now),
-            LastBanCheckTime = DateTime.Now
+            LastBanCheckTime = DateTime.Now,
+            LastDropResetDate = GetCurrentDropResetDate(DateTime.Now)
         };
     }
 
@@ -559,6 +569,7 @@ public partial class MainWindow : Window
         _banDecayTimer.Tick += (_, _) =>
         {
             var changed = ApplyDailyBanDecay();
+            changed |= ApplyWeeklyDropReset();
             UpdateDashboard();
 
             if (changed)
@@ -619,6 +630,34 @@ public partial class MainWindow : Window
         return dateTime.TimeOfDay >= updateTime
             ? dateTime.Date
             : dateTime.Date.AddDays(-1);
+    }
+
+    private bool ApplyWeeklyDropReset()
+    {
+        var currentDropResetDate = GetCurrentDropResetDate(DateTime.Now);
+        if (_database.LastDropResetDate != default && _database.LastDropResetDate >= currentDropResetDate)
+        {
+            return false;
+        }
+
+        ResetAllDropFlags();
+        _database.LastDropResetDate = currentDropResetDate;
+        return true;
+    }
+
+    private int ResetAllDropFlags()
+    {
+        var resetCount = 0;
+
+        foreach (var account in Accounts.Where(account => account.DropActive))
+        {
+            account.DropActive = false;
+            resetCount++;
+        }
+
+        _lastMarkedDropAccount = null;
+        UndoDropButton.Visibility = Visibility.Collapsed;
+        return resetCount;
     }
 
     private void SaveData(string? status = null)
@@ -1103,11 +1142,12 @@ public partial class MainWindow : Window
         });
     }
 
-    private void ShowDeleteConfirmation(string title, string message, Action onConfirm)
+    private void ShowDeleteConfirmation(string title, string message, Action onConfirm, string? confirmText = null)
     {
         _pendingConfirmationAction = onConfirm;
         ConfirmTitleText.Text = title;
         ConfirmMessageText.Text = message;
+        ConfirmDeleteButtonText.Text = confirmText ?? L("Excluir", "Delete");
         ConfirmOverlay.Visibility = Visibility.Visible;
     }
 
@@ -1252,6 +1292,30 @@ public partial class MainWindow : Window
         SettingsMessageText.Text = L("PIN alterado com sucesso.", "PIN changed successfully.");
     }
 
+    private void ManualResetDropsButton_Click(object sender, RoutedEventArgs e)
+    {
+        ShowDeleteConfirmation(
+            L("Resetar drops", "Reset drops"),
+            L("Marcar todas as contas como pendentes de drop agora?", "Mark all accounts as pending drop now?"),
+            ResetDropsManually,
+            L("Resetar", "Reset"));
+    }
+
+    private void ResetDropsManually()
+    {
+        var resetCount = ResetAllDropFlags();
+        _database.LastDropResetDate = GetCurrentDropResetDate(DateTime.Now);
+        UpdateDashboard();
+        SaveData(resetCount == 0
+            ? L("Todos os drops ja estavam pendentes.", "All drops were already pending.")
+            : L("Drops resetados manualmente.", "Drops reset manually."));
+
+        SettingsMessageText.Foreground = (Brush)FindResource("Green");
+        SettingsMessageText.Text = resetCount == 0
+            ? L("Todos os drops ja estavam pendentes.", "All drops were already pending.")
+            : string.Format(AppLocalization.CurrentCulture, L("{0} drops resetados.", "{0} drops reset."), resetCount);
+    }
+
     private void CreateBackupButton_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -1302,7 +1366,8 @@ public partial class MainWindow : Window
             ShowDeleteConfirmation(
                 L("Importar backup", "Import backup"),
                 L("Importar este backup e substituir os dados atuais?", "Import this backup and replace the current data?"),
-                () => ImportBackupFile(selectedPath));
+                () => ImportBackupFile(selectedPath),
+                L("Importar", "Import"));
         }
         catch
         {
@@ -1400,6 +1465,13 @@ public partial class MainWindow : Window
         var days = ((int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7) % 7;
         var reset = now.Date.AddDays(days).AddHours(23);
         return reset <= now ? reset.AddDays(7) : reset;
+    }
+
+    private static DateTime GetCurrentDropResetDate(DateTime dateTime)
+    {
+        var daysSinceTuesday = ((int)dateTime.DayOfWeek - (int)DayOfWeek.Tuesday + 7) % 7;
+        var reset = dateTime.Date.AddDays(-daysSinceTuesday).AddHours(23);
+        return dateTime < reset ? reset.AddDays(-7) : reset;
     }
 
     private void SetStatus(string message)
@@ -1882,6 +1954,7 @@ public sealed class AppDatabase
     public DateTime LastUpdated { get; set; } = DateTime.Now;
     public DateTime LastBanDecayDate { get; set; } = DateTime.Today;
     public DateTime LastBanCheckTime { get; set; } = DateTime.Now;
+    public DateTime LastDropResetDate { get; set; } = DateTime.MinValue;
     public List<SteamAccount> Accounts { get; set; } = [];
     public List<AccountDrop> Drops { get; set; } = [];
 }
