@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\rexpeita-avatar.png" />
+    <None Remove="Assets\rexpeita-skull.png" />
+    <None Remove="Assets\rexpeita-title-icon.png" />
+    <None Remove="Assets\cs2-steam-bg.jpg" />
+    <None Remove="Assets\icon-gift.png" />
+    <None Remove="Assets\icon-steam.png" />
+    <None Remove="Assets\icon-user.png" />
+    <None Remove="Assets\icon-profit.png" />
+    <Resource Include="Assets\rexpeita-avatar.png" />
+    <Resource Include="Assets\rexpeita-skull.png" />
+    <Resource Include="Assets\rexpeita-title-icon.png" />
+    <Resource Include="Assets\cs2-steam-bg.jpg" />
+    <Resource Include="Assets\icon-gift.png" />
+    <Resource Include="Assets\icon-steam.png" />
+    <Resource Include="Assets\icon-user.png" />
+    <Resource Include="Assets\icon-profit.png" />
+  </ItemGroup>
+
+</Project>
